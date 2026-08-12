@@ -263,9 +263,6 @@ def GetRequiredArgs():
       # ENABLE_SERVICE_DISCOVERY=0 for print preview support
       'enable_print_preview': True,
       'optimize_webui': True,
-      # Enable support for Widevine CDM.
-      'enable_widevine': True,
-
       # Don't use the chrome style plugin.
       'clang_use_chrome_plugins': False,
   }

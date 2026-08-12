@@ -254,9 +254,6 @@ if (is_linux) {
 assert(enable_basic_printing)
 assert(enable_print_preview)
 
-# Enable support for Widevine CDM.
-assert(enable_widevine)
-
 if (is_clang) {
   # Don't use the chrome style plugin.
   assert(!clang_use_chrome_plugins)
@@ -764,8 +761,6 @@ static_library("libcef_static") {
     "libcef/common/values_impl.h",
     "libcef/common/waitable_event_impl.cc",
     "libcef/common/waitable_event_impl.h",
-    "libcef/common/widevine_loader.cc",
-    "libcef/common/widevine_loader.h",
     "libcef/features/runtime.h",
     "libcef/features/runtime_checks.h",
     "libcef/renderer/alloy/alloy_content_renderer_client.cc",
@@ -833,6 +828,13 @@ static_library("libcef_static") {
     "//cef/libcef/features",
   ]
 
+  if (enable_widevine) {
+    sources += [
+      "libcef/common/widevine_loader.cc",
+      "libcef/common/widevine_loader.h",
+    ]
+  }
+
   deps = [
     ":cef_make_headers",
 
@@ -857,7 +859,6 @@ static_library("libcef_static") {
     "//chrome:strings",
     "//chrome/common:buildflags",
     "//chrome/services/printing:lib",
-    "//components/cdm/renderer",
     "//components/certificate_transparency",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
@@ -923,8 +924,6 @@ static_library("libcef_static") {
     "//third_party/hunspell",
     "//third_party/leveldatabase",
     "//third_party/libxml:libxml",
-    "//third_party/widevine/cdm:headers",
-    "//third_party/widevine/cdm",
     "//third_party/icu",
     "//third_party/zlib:minizip",
     "//ui/base",
@@ -939,6 +938,14 @@ static_library("libcef_static") {
     "//url",
     "//v8",
   ]
+
+  if (enable_widevine) {
+    deps += [
+      "//components/cdm/renderer",
+      "//third_party/widevine/cdm:headers",
+      "//third_party/widevine/cdm",
+    ]
+  }
 
   if (is_win) {
     sources += includes_win + [
