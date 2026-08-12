@@ -47,6 +47,7 @@ Thumbs.db
 .vs/
 .kdev4/
 *.kdev4
+.idea/
 # CEF generated directories
 /binary_distrib
 /docs
