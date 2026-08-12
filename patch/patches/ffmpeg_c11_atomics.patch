@@ -1,0 +1,10 @@
+diff --git third_party/ffmpeg/libavutil/cpu.c third_party/ffmpeg/libavutil/cpu.c
+--- third_party/ffmpeg/libavutil/cpu.c
++++ third_party/ffmpeg/libavutil/cpu.c
+@@ -50 +50,5 @@
+-static atomic_int cpu_flags = ATOMIC_VAR_INIT(-1);
++#ifndef ATOMIC_VAR_INIT
++#define ATOMIC_VAR_INIT(value) (value)
++#endif
++
++static atomic_int cpu_flags = ATOMIC_VAR_INIT(-1);
