@@ -140,11 +140,6 @@ def git_apply_patch_file(patch_path, patch_dir):
 
   config = '-p0 --ignore-whitespace'
 
-  # Output patch contents.
-  cmd = '%s apply %s --numstat' % (git_exe, config)
-  result = exec_cmd(cmd, patch_dir, patch_string)
-  write_indented_output(result['out'].replace('<stdin>', patch_name))
-
   # Reverse check to see if the patch has already been applied.
   cmd = '%s apply %s --reverse --check' % (git_exe, config)
   result = exec_cmd(cmd, patch_dir, patch_string)
@@ -152,6 +147,10 @@ def git_apply_patch_file(patch_path, patch_dir):
     sys.stdout.write('... already applied (skipping).\n')
     return 'skip'
 
+  # Output patch contents and verify that the patch can be applied cleanly.
+  # This check is intentionally performed only after the reverse check above;
+  # older CEF code attempted a normal apply first, which produced a failure
+  # when an already-applied patch was reused incrementally.
   # Normal check to see if the patch can be applied cleanly.
   cmd = '%s apply %s --check' % (git_exe, config)
   result = exec_cmd(cmd, patch_dir, patch_string)
@@ -159,6 +158,10 @@ def git_apply_patch_file(patch_path, patch_dir):
     sys.stdout.write('... failed to apply:\n')
     write_indented_output(result['err'].replace('<stdin>', patch_name))
     return 'fail'
+
+  cmd = '%s apply %s --numstat' % (git_exe, config)
+  result = exec_cmd(cmd, patch_dir, patch_string)
+  write_indented_output(result['out'].replace('<stdin>', patch_name))
 
   # Apply the patch file. This should always succeed because the previous
   # command succeeded.
