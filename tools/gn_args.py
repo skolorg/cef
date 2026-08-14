@@ -226,6 +226,11 @@ def GetRecommendedDefaultArgs():
       # introduces a Windows official build dependency on the
       # "//chrome:chrome_dll" target, which will fail to build with CEF.
       'enable_resource_allowlist_generation': False,
+
+      # Enable support for the Widevine CDM by default, preserving the CEF
+      # release configuration while allowing GN_DEFINES to disable it for
+      # embedders that do not use encrypted media.
+      'enable_widevine': True,
   }
 
   if platform == 'linux':
