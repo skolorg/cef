@@ -3,6 +3,7 @@
 // be found in the LICENSE file.
 
 #include "libcef/browser/prefs/browser_prefs.h"
+#include "cef/libcef/features/features.h"
 
 #include "libcef/browser/browser_context.h"
 #include "libcef/browser/browser_host_base.h"
@@ -14,7 +15,6 @@
 #include "libcef/browser/prefs/renderer_prefs.h"
 #include "libcef/common/cef_switches.h"
 #include "libcef/common/extensions/extensions_util.h"
-#include "cef/libcef/features/features.h"
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"

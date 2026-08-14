@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "libcef/browser/alloy/alloy_content_browser_client.h"
+#include "cef/libcef/features/features.h"
 
 #include <algorithm>
 #include <utility>
@@ -34,7 +35,6 @@
 #include "libcef/browser/speech_recognition_manager_delegate.h"
 #include "libcef/browser/ssl_info_impl.h"
 #include "libcef/browser/thread_util.h"
-#include "cef/libcef/features/features.h"
 #include "libcef/browser/x509_certificate_impl.h"
 #include "libcef/common/alloy/alloy_content_client.h"
 #include "libcef/common/app_manager.h"
