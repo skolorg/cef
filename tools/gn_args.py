@@ -295,6 +295,17 @@ def GetMergedArgs(build_args):
 
   # Verify that the user is not trying to override required args.
   required = GetRequiredArgs()
+  # CEF historically required Chromium printing to be enabled because the
+  # stock CEF build always compiled its printing integration.  The downstream
+  # CEF build can now omit that integration (cef_enable_printing=false), in
+  # which case forcing enable_basic_printing/enable_print_preview back to true
+  # defeats the feature and causes the assertion below to reject a valid
+  # incremental build.  Keep the upstream requirements for the default build,
+  # but allow both Chromium printing switches to be disabled together with
+  # the CEF integration.
+  if dict.get('cef_enable_printing') is False:
+    required.pop('enable_basic_printing', None)
+    required.pop('enable_print_preview', None)
   for key in required.keys():
     if key in dict:
       assert dict[key] == required[key], \
