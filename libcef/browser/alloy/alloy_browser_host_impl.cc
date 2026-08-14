@@ -9,14 +9,19 @@
 #include <utility>
 
 #include "libcef/browser/alloy/alloy_browser_context.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
 #include "libcef/browser/audio_capturer.h"
+#endif
 #include "libcef/browser/browser_context.h"
 #include "libcef/browser/browser_info.h"
 #include "libcef/browser/browser_info_manager.h"
 #include "libcef/browser/browser_platform_delegate.h"
 #include "libcef/browser/context.h"
 #include "libcef/browser/devtools/devtools_manager.h"
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
 #include "libcef/browser/media_capture_devices_dispatcher.h"
+#endif
 #include "libcef/browser/native/cursor_util.h"
 #include "libcef/browser/osr/osr_util.h"
 #include "libcef/browser/request_context_impl.h"
@@ -780,8 +785,10 @@ void AlloyBrowserHostImpl::DestroyBrowser() {
   menu_manager_.reset(nullptr);
 
   // Delete the audio capturer
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
   recently_audible_timer_.Stop();
   audio_capturer_.reset(nullptr);
+#endif
 
   CefBrowserHostBase::DestroyBrowser();
 }
@@ -1385,6 +1392,14 @@ void AlloyBrowserHostImpl::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   CEF_REQUIRE_UIT();
 
+#if !BUILDFLAG(ENABLE_CEF_WEBRTC)
+  std::move(callback).Run(
+      blink::MediaStreamDevices(),
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+      std::unique_ptr<content::MediaStreamUI>());
+  return;
+#else
+
   blink::MediaStreamDevices devices;
 
   const base::CommandLine* command_line =
@@ -1435,16 +1450,21 @@ void AlloyBrowserHostImpl::RequestMediaAccessPermission(
 
   std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
                           std::unique_ptr<content::MediaStreamUI>());
+#endif
 }
 
 bool AlloyBrowserHostImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
+#if !BUILDFLAG(ENABLE_CEF_WEBRTC)
+  return false;
+#else
   // Check media access permission without prompting the user.
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(switches::kEnableMediaStream);
+#endif
 }
 
 bool AlloyBrowserHostImpl::IsNeverComposited(
@@ -1498,6 +1518,7 @@ void AlloyBrowserHostImpl::DidFinishNavigation(
 }
 
 void AlloyBrowserHostImpl::OnAudioStateChanged(bool audible) {
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
   if (audible) {
     recently_audible_timer_.Stop();
     StartAudioCapturer();
@@ -1511,10 +1532,13 @@ void AlloyBrowserHostImpl::OnAudioStateChanged(bool audible) {
         base::BindOnce(&AlloyBrowserHostImpl::OnRecentlyAudibleTimerFired,
                        this));
   }
+#endif
 }
 
 void AlloyBrowserHostImpl::OnRecentlyAudibleTimerFired() {
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
   audio_capturer_.reset();
+#endif
 }
 
 void AlloyBrowserHostImpl::AccessibilityEventReceived(
@@ -1547,6 +1571,7 @@ void AlloyBrowserHostImpl::WebContentsDestroyed() {
 }
 
 void AlloyBrowserHostImpl::StartAudioCapturer() {
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
   if (!client_.get() || audio_capturer_)
     return;
 
@@ -1563,6 +1588,7 @@ void AlloyBrowserHostImpl::StartAudioCapturer() {
     return;
 
   audio_capturer_.reset(new CefAudioCapturer(params, this, audio_handler));
+#endif
 }
 
 // AlloyBrowserHostImpl private methods.

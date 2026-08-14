@@ -84,6 +84,7 @@ buildflag_header("features") {
     "IS_CEF_SANDBOX_BUILD=$is_cef_sandbox_build",
     "ENABLE_CEF_PRINTING=$cef_enable_printing",
     "ENABLE_CEF_PDF=$cef_enable_pdf",
+    "ENABLE_CEF_WEBRTC=$cef_enable_webrtc",
   ]
 }
 

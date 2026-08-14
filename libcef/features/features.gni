@@ -6,6 +6,7 @@ declare_args() {
   enable_cef = true
   cef_enable_printing = true
   cef_enable_pdf = true
+  cef_enable_webrtc = true
 
   # Enables base target customizations necessary for distribution of the
   # cef_sandbox static library. This value will be set via gn_args.py for the

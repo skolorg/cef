@@ -421,10 +421,6 @@ static_library("libcef_static") {
     "libcef/browser/alloy/chrome_profile_alloy.h",
     "libcef/browser/alloy/alloy_content_browser_client.cc",
     "libcef/browser/alloy/alloy_content_browser_client.h",
-    "libcef/browser/audio_capturer.cc",
-    "libcef/browser/audio_capturer.h",
-    "libcef/browser/audio_loopback_stream_creator.cc",
-    "libcef/browser/audio_loopback_stream_creator.h",
     "libcef/browser/browser_contents_delegate.cc",
     "libcef/browser/browser_contents_delegate.h",
     "libcef/browser/browser_context.cc",
@@ -535,8 +531,6 @@ static_library("libcef_static") {
     "libcef/browser/javascript_dialog_manager.h",
     "libcef/browser/main_runner.cc",
     "libcef/browser/main_runner.h",
-    "libcef/browser/media_capture_devices_dispatcher.cc",
-    "libcef/browser/media_capture_devices_dispatcher.h",
     "libcef/browser/media_router/media_route_impl.cc",
     "libcef/browser/media_router/media_route_impl.h",
     "libcef/browser/media_router/media_router_impl.cc",
@@ -844,6 +838,17 @@ static_library("libcef_static") {
       "libcef/browser/printing/print_view_manager.h",
       "libcef/renderer/extensions/print_render_frame_helper_delegate.cc",
       "libcef/renderer/extensions/print_render_frame_helper_delegate.h",
+    ]
+  }
+
+  if (cef_enable_webrtc) {
+    sources += [
+      "libcef/browser/audio_capturer.cc",
+      "libcef/browser/audio_capturer.h",
+      "libcef/browser/audio_loopback_stream_creator.cc",
+      "libcef/browser/audio_loopback_stream_creator.h",
+      "libcef/browser/media_capture_devices_dispatcher.cc",
+      "libcef/browser/media_capture_devices_dispatcher.h",
     ]
   }
 

@@ -7,7 +7,9 @@
 #include "libcef/browser/browser_context.h"
 #include "libcef/browser/browser_host_base.h"
 #include "libcef/browser/context.h"
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
 #include "libcef/browser/media_capture_devices_dispatcher.h"
+#endif
 #include "libcef/browser/prefs/pref_store.h"
 #include "libcef/browser/prefs/renderer_prefs.h"
 #include "libcef/common/cef_switches.h"
@@ -224,7 +226,9 @@ std::unique_ptr<PrefService> CreatePrefService(Profile* profile,
   //    existing registration method.
 
   // Default preferences.
+#if BUILDFLAG(ENABLE_CEF_WEBRTC)
   CefMediaCaptureDevicesDispatcher::RegisterPrefs(registry.get());
+#endif
   certificate_transparency::prefs::RegisterPrefs(registry.get());
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry.get());
   media_router::RegisterLocalStatePrefs(registry.get());
