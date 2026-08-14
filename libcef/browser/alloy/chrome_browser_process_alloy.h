@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "media/media_buildflags.h"
+#include "cef/libcef/features/features.h"
 
 class ChromeProfileManagerAlloy;
 
@@ -105,13 +106,17 @@ class ChromeBrowserProcessAlloy : public BrowserProcess {
   bool shutdown_;
 
   std::string locale_;
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
   std::unique_ptr<printing::PrintJobManager> print_job_manager_;
+#endif
   std::unique_ptr<ChromeProfileManagerAlloy> profile_manager_;
   scoped_refptr<extensions::EventRouterForwarder> event_router_forwarder_;
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
   scoped_refptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
   std::unique_ptr<printing::BackgroundPrintingManager>
       background_printing_manager_;
+#endif
   std::unique_ptr<PrefService> local_state_;
   // Must be destroyed after |local_state_|.
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>

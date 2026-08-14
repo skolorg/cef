@@ -32,6 +32,7 @@
 #include "libcef/browser/speech_recognition_manager_delegate.h"
 #include "libcef/browser/ssl_info_impl.h"
 #include "libcef/browser/thread_util.h"
+#include "cef/libcef/features/features.h"
 #include "libcef/browser/x509_certificate_impl.h"
 #include "libcef/common/alloy/alloy_content_client.h"
 #include "libcef/common/app_manager.h"
@@ -1372,6 +1373,7 @@ bool AlloyContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
 bool AlloyContentBrowserClient::ShouldAllowPluginCreation(
     const url::Origin& embedder_origin,
     const content::PepperPluginInfo& plugin_info) {
+#if BUILDFLAG(ENABLE_CEF_PDF)
   if (plugin_info.name == ChromeContentClient::kPDFInternalPluginName) {
     // Allow embedding the internal PDF plugin in the built-in PDF extension.
     if (embedder_origin.scheme() == extensions::kExtensionScheme &&
@@ -1390,6 +1392,7 @@ bool AlloyContentBrowserClient::ShouldAllowPluginCreation(
     // https://crbug.com/1027173.
     return false;
   }
+#endif
 
   return true;
 }

@@ -36,7 +36,10 @@
 #include "libcef/renderer/browser_impl.h"
 #include "libcef/renderer/browser_manager.h"
 #include "libcef/renderer/extensions/extensions_renderer_client.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
 #include "libcef/renderer/extensions/print_render_frame_helper_delegate.h"
+#endif
 #include "libcef/renderer/thread_util.h"
 
 #include "base/command_line.h"
@@ -55,12 +58,16 @@
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "chrome/renderer/loadtimes_extension_bindings.h"
 #include "chrome/renderer/media/chrome_key_systems.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
 #include "chrome/renderer/pepper/chrome_pdf_print_client.h"
+#endif
 #include "chrome/renderer/pepper/pepper_helper.h"
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/nacl/common/nacl_constants.h"
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
 #include "components/printing/renderer/print_render_frame_helper.h"
+#endif
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_provider.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
@@ -232,10 +239,12 @@ void AlloyContentRendererClient::RenderThreadStarted() {
   }
 #endif  // defined(OS_MAC)
 
+#if BUILDFLAG(ENABLE_CEF_PDF)
   if (extensions::PdfExtensionEnabled()) {
     pdf_print_client_.reset(new ChromePDFPrintClient());
     pdf::PepperPDFHost::SetPrintClient(pdf_print_client_.get());
   }
+#endif
 
   if (extensions::ExtensionsEnabled())
     extensions_renderer_client_->RenderThreadStarted();
@@ -302,12 +311,14 @@ void AlloyContentRendererClient::RenderFrameCreated(
     OnBrowserCreated(render_frame->GetRenderView(), is_windowless);
   }
 
+ #if BUILDFLAG(ENABLE_CEF_PRINTING)
   if (is_windowless.has_value()) {
     new printing::PrintRenderFrameHelper(
         render_frame,
         base::WrapUnique(
             new extensions::CefPrintRenderFrameHelperDelegate(*is_windowless)));
   }
+ #endif
 }
 
 void AlloyContentRendererClient::RenderViewCreated(

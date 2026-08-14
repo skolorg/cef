@@ -9,10 +9,13 @@
 
 #include "include/cef_stream.h"
 #include "include/cef_version.h"
-#include "libcef/browser/extensions/pdf_extension_util.h"
 #include "libcef/common/app_manager.h"
 #include "libcef/common/cef_switches.h"
 #include "libcef/common/extensions/extensions_util.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
+#include "libcef/browser/extensions/pdf_extension_util.h"
+#endif
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -60,6 +63,7 @@ content::PepperPluginInfo::PPP_ShutdownModuleFunc g_pdf_shutdown_module;
 // not marked internal, aside from being automatically registered, they're just
 // regular plugins).
 void ComputeBuiltInPlugins(std::vector<content::PepperPluginInfo>* plugins) {
+#if BUILDFLAG(ENABLE_CEF_PDF)
   if (extensions::PdfExtensionEnabled()) {
     content::PepperPluginInfo pdf_info;
     pdf_info.is_internal = true;
@@ -78,6 +82,7 @@ void ComputeBuiltInPlugins(std::vector<content::PepperPluginInfo>* plugins) {
     pdf_info.permissions = kPDFPluginPermissions;
     plugins->push_back(pdf_info);
   }
+#endif
 }
 
 }  // namespace

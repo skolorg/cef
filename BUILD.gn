@@ -250,9 +250,11 @@ if (is_linux) {
 # Set by GetRequiredArgs() in //cef/tools/gn_args.py.
 #
 
-# Set ENABLE_PRINTING=1 ENABLE_BASIC_PRINTING=1.
-assert(enable_basic_printing)
-assert(enable_print_preview)
+# Set ENABLE_PRINTING=1 ENABLE_BASIC_PRINTING=1 when CEF printing is enabled.
+if (cef_enable_printing) {
+  assert(enable_basic_printing)
+  assert(enable_print_preview)
+}
 
 if (is_clang) {
   # Don't use the chrome style plugin.
@@ -515,10 +517,6 @@ static_library("libcef_static") {
     "libcef/browser/extensions/extension_web_contents_observer.h",
     "libcef/browser/extensions/mime_handler_view_guest_delegate.cc",
     "libcef/browser/extensions/mime_handler_view_guest_delegate.h",
-    "libcef/browser/extensions/pdf_extension_util.cc",
-    "libcef/browser/extensions/pdf_extension_util.h",
-    "libcef/browser/extensions/pdf_web_contents_helper_client.cc",
-    "libcef/browser/extensions/pdf_web_contents_helper_client.h",
     "libcef/browser/extensions/value_store/cef_value_store.cc",
     "libcef/browser/extensions/value_store/cef_value_store.h",
     "libcef/browser/extensions/value_store/cef_value_store_factory.cc",
@@ -622,12 +620,6 @@ static_library("libcef_static") {
     "libcef/browser/prefs/pref_store.h",
     "libcef/browser/prefs/renderer_prefs.cc",
     "libcef/browser/prefs/renderer_prefs.h",
-    "libcef/browser/print_settings_impl.cc",
-    "libcef/browser/print_settings_impl.h",
-    "libcef/browser/printing/constrained_window_views_client.cc",
-    "libcef/browser/printing/constrained_window_views_client.h",
-    "libcef/browser/printing/print_view_manager.cc",
-    "libcef/browser/printing/print_view_manager.h",
     "libcef/browser/process_util_impl.cc",
     "libcef/browser/request_context_handler_map.cc",
     "libcef/browser/request_context_handler_map.h",
@@ -785,8 +777,6 @@ static_library("libcef_static") {
     "libcef/renderer/extensions/extensions_dispatcher_delegate.h",
     "libcef/renderer/extensions/extensions_renderer_client.cc",
     "libcef/renderer/extensions/extensions_renderer_client.h",
-    "libcef/renderer/extensions/print_render_frame_helper_delegate.cc",
-    "libcef/renderer/extensions/print_render_frame_helper_delegate.h",
     "libcef/renderer/frame_impl.cc",
     "libcef/renderer/frame_impl.h",
     "libcef/renderer/render_frame_observer.cc",
@@ -835,6 +825,28 @@ static_library("libcef_static") {
     ]
   }
 
+  if (cef_enable_pdf) {
+    sources += [
+      "libcef/browser/extensions/pdf_extension_util.cc",
+      "libcef/browser/extensions/pdf_extension_util.h",
+      "libcef/browser/extensions/pdf_web_contents_helper_client.cc",
+      "libcef/browser/extensions/pdf_web_contents_helper_client.h",
+    ]
+  }
+
+  if (cef_enable_printing) {
+    sources += [
+      "libcef/browser/print_settings_impl.cc",
+      "libcef/browser/print_settings_impl.h",
+      "libcef/browser/printing/constrained_window_views_client.cc",
+      "libcef/browser/printing/constrained_window_views_client.h",
+      "libcef/browser/printing/print_view_manager.cc",
+      "libcef/browser/printing/print_view_manager.h",
+      "libcef/renderer/extensions/print_render_frame_helper_delegate.cc",
+      "libcef/renderer/extensions/print_render_frame_helper_delegate.h",
+    ]
+  }
+
   deps = [
     ":cef_make_headers",
 
@@ -858,7 +870,6 @@ static_library("libcef_static") {
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/common:buildflags",
-    "//chrome/services/printing:lib",
     "//components/certificate_transparency",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
@@ -870,17 +881,10 @@ static_library("libcef_static") {
     "//components/media_router/common/mojom:media_router",
     "//components/navigation_interception",
     "//components/network_session_configurator/common",
-    "//components/pdf/browser",
-    "//components/pdf/renderer",
     "//components/plugins/renderer",
     "//components/pref_registry",
-    "//components/printing/browser",
-    "//components/printing/common",
-    "//components/printing/renderer",
     "//components/proxy_config",
     "//components/safe_browsing/core/db:test_database_manager",
-    "//components/services/print_compositor/public/cpp",
-    "//components/services/print_compositor/public/mojom",
     "//components/update_client",
     "//components/url_formatter",
     "//components/user_prefs",
@@ -910,9 +914,7 @@ static_library("libcef_static") {
     "//media",
     "//media/blink",
     "//net",
-    "//pdf",
     "//ppapi/buildflags",
-    "//printing/buildflags",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
@@ -938,6 +940,14 @@ static_library("libcef_static") {
     "//url",
     "//v8",
   ]
+
+  if (cef_enable_pdf) {
+    deps += [
+      "//components/pdf/browser",
+      "//components/pdf/renderer",
+      "//pdf",
+    ]
+  }
 
   if (enable_widevine) {
     deps += [
@@ -967,10 +977,15 @@ static_library("libcef_static") {
       "libcef/browser/osr/browser_platform_delegate_osr_win.cc",
       "libcef/browser/osr/browser_platform_delegate_osr_win.h",
 
-      # Part of //chrome/utility.
-      "//chrome/utility/printing_handler.cc",
-      "//chrome/utility/printing_handler.h",
     ]
+
+    if (cef_enable_printing) {
+      sources += [
+        # Part of //chrome/utility.
+        "//chrome/utility/printing_handler.cc",
+        "//chrome/utility/printing_handler.h",
+      ]
+    }
 
     deps += [
       "//chrome/install_static:secondary_module",

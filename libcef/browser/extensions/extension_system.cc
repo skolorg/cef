@@ -8,7 +8,10 @@
 #include <string>
 
 #include "libcef/browser/extension_impl.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
 #include "libcef/browser/extensions/pdf_extension_util.h"
+#endif
 #include "libcef/browser/extensions/value_store/cef_value_store_factory.h"
 #include "libcef/browser/thread_util.h"
 #include "libcef/common/extensions/extensions_util.h"
@@ -251,11 +254,13 @@ void CefExtensionSystem::Init() {
   //    the guest WebContents will be destroyed. This triggers a call to
   //    CefMimeHandlerViewGuestDelegate::OnGuestDetached which removes the
   //    routing ID association with the owner CefBrowser.
+#if BUILDFLAG(ENABLE_CEF_PDF)
   if (PdfExtensionEnabled()) {
     LoadExtension(ParseManifest(pdf_extension_util::GetManifest()),
                   base::FilePath(FILE_PATH_LITERAL("pdf")), true /* internal */,
                   nullptr, nullptr);
   }
+#endif
 
   initialized_ = true;
 }

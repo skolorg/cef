@@ -11,6 +11,7 @@
 #include "libcef/common/crash_reporting.h"
 #include "libcef/common/extensions/extensions_util.h"
 #include "libcef/common/resource_util.h"
+#include "cef/libcef/features/features.h"
 #include "libcef/renderer/alloy/alloy_content_renderer_client.h"
 
 #include "base/base_switches.h"
@@ -24,7 +25,9 @@
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
 #include "chrome/child/pdf_child_init.h"
+#endif
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -39,7 +42,9 @@
 #include "extensions/common/constants.h"
 #include "ipc/ipc_buildflags.h"
 #include "net/base/features.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
 #include "pdf/pdf_ppapi.h"
+#endif
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -392,9 +397,11 @@ void AlloyMainDelegate::PreSandboxStartup() {
 }
 
 void AlloyMainDelegate::SandboxInitialized(const std::string& process_type) {
+#if BUILDFLAG(ENABLE_CEF_PDF)
   AlloyContentClient::SetPDFEntryFunctions(chrome_pdf::PPP_GetInterface,
-                                           chrome_pdf::PPP_InitializeModule,
-                                           chrome_pdf::PPP_ShutdownModule);
+                                            chrome_pdf::PPP_InitializeModule,
+                                            chrome_pdf::PPP_ShutdownModule);
+#endif
 }
 
 int AlloyMainDelegate::RunProcess(

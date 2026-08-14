@@ -12,6 +12,7 @@
 #include "libcef/browser/prefs/renderer_prefs.h"
 #include "libcef/common/cef_switches.h"
 #include "libcef/common/extensions/extensions_util.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -27,11 +28,15 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
+#endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/browser/themes/theme_service.h"
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
+#endif
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -273,6 +278,7 @@ std::unique_ptr<PrefService> CreatePrefService(Profile* profile,
     renderer_prefs::RegisterProfilePrefs(registry.get(), locale);
 
     // Print preferences.
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
     // Based on ProfileImpl::RegisterProfilePrefs.
     registry->RegisterBooleanPref(prefs::kForceGoogleSafeSearch, false);
     registry->RegisterIntegerPref(prefs::kForceYouTubeRestrict,
@@ -287,6 +293,7 @@ std::unique_ptr<PrefService> CreatePrefService(Profile* profile,
     registry->RegisterBooleanPref(prefs::kEnableMediaRouter, true);
     printing::PolicySettings::RegisterProfilePrefs(registry.get());
     printing::PrintPreviewStickySettings::RegisterProfilePrefs(registry.get());
+#endif
     DownloadPrefs::RegisterProfilePrefs(registry.get());
 
     // Cache preferences.

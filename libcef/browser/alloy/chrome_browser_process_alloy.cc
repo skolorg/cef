@@ -11,13 +11,16 @@
 #include "libcef/browser/prefs/browser_prefs.h"
 #include "libcef/browser/thread_util.h"
 #include "libcef/common/cef_switches.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/command_line.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
+#endif
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "components/net_log/chrome_net_log.h"
 #include "components/prefs/pref_service.h"
@@ -56,7 +59,9 @@ void ChromeBrowserProcessAlloy::OnContextInitialized() {
   DCHECK(!shutdown_);
 
   // Must be created after the NotificationService.
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
   print_job_manager_.reset(new printing::PrintJobManager());
+#endif
   profile_manager_.reset(new ChromeProfileManagerAlloy());
   event_router_forwarder_ = new extensions::EventRouterForwarder();
   context_initialized_ = true;
@@ -71,9 +76,11 @@ void ChromeBrowserProcessAlloy::CleanupOnUIThread() {
   // Wait for the pending print jobs to finish. Don't do this later, since
   // this might cause a nested message loop to run, and we don't want pending
   // tasks to run once teardown has started.
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
   print_job_manager_->Shutdown();
   print_job_manager_.reset(nullptr);
   print_preview_dialog_controller_ = nullptr;
+#endif
 
   profile_manager_.reset();
   event_router_forwarder_ = nullptr;
@@ -92,16 +99,20 @@ void ChromeBrowserProcessAlloy::CleanupOnUIThread() {
       pref_watcher->Shutdown();
 
     // Unregister observers for |background_printing_manager_|.
+ #if BUILDFLAG(ENABLE_CEF_PRINTING)
     if (background_printing_manager_) {
       background_printing_manager_->DeletePreviewContentsForBrowserContext(
           profile);
     }
+ #endif
   }
 
   local_state_.reset();
   browser_policy_connector_.reset();
 
+#if BUILDFLAG(ENABLE_CEF_PRINTING)
   background_printing_manager_.reset();
+#endif
 
   field_trial_list_.reset();
 
@@ -238,26 +249,38 @@ bool ChromeBrowserProcessAlloy::IsShuttingDown() {
 }
 
 printing::PrintJobManager* ChromeBrowserProcessAlloy::print_job_manager() {
+#if !BUILDFLAG(ENABLE_CEF_PRINTING)
+  return nullptr;
+#else
   DCHECK(context_initialized_);
   return print_job_manager_.get();
+#endif
 }
 
 printing::PrintPreviewDialogController*
 ChromeBrowserProcessAlloy::print_preview_dialog_controller() {
+#if !BUILDFLAG(ENABLE_CEF_PRINTING)
+  return nullptr;
+#else
   if (!print_preview_dialog_controller_.get()) {
     print_preview_dialog_controller_ =
         new printing::PrintPreviewDialogController();
   }
   return print_preview_dialog_controller_.get();
+#endif
 }
 
 printing::BackgroundPrintingManager*
 ChromeBrowserProcessAlloy::background_printing_manager() {
+#if !BUILDFLAG(ENABLE_CEF_PRINTING)
+  return nullptr;
+#else
   if (!background_printing_manager_.get()) {
     background_printing_manager_.reset(
         new printing::BackgroundPrintingManager());
   }
   return background_printing_manager_.get();
+#endif
 }
 
 IntranetRedirectDetector*

@@ -9,6 +9,7 @@
 #include "libcef/browser/thread_util.h"
 #include "libcef/browser/web_plugin_impl.h"
 #include "libcef/common/alloy/alloy_content_client.h"
+#include "cef/libcef/features/features.h"
 
 #include "extensions/common/constants.h"
 
@@ -72,11 +73,13 @@ bool CefPluginServiceFilter::IsPluginAvailable(
     return false;
   }
 
+#if BUILDFLAG(ENABLE_CEF_PDF)
   if (plugin->path == CefString(AlloyContentClient::kPDFPluginPath)) {
     // Always allow the internal PDF plugin to load.
     *status = chrome::mojom::PluginStatus::kAllowed;
     return true;
   }
+#endif
 
   const GURL& policy_url = main_frame_origin.GetURL();
   if (!policy_url.is_empty() &&

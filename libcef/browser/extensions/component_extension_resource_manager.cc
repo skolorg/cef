@@ -3,14 +3,19 @@
 // found in the LICENSE file.
 
 #include "libcef/browser/extensions/component_extension_resource_manager.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/values.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
+#endif
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/component_extension_resources_map.h"
+#if BUILDFLAG(ENABLE_CEF_PDF)
 #include "chrome/grit/pdf_resources_map.h"
+#endif
 #include "extensions/common/constants.h"
 
 namespace extensions {
@@ -18,6 +23,7 @@ namespace extensions {
 CefComponentExtensionResourceManager::CefComponentExtensionResourceManager() {
   AddComponentResourceEntries(kComponentExtensionResources,
                               kComponentExtensionResourcesSize);
+#if BUILDFLAG(ENABLE_CEF_PDF)
   AddComponentResourceEntries(kPdfResources, kPdfResourcesSize);
 
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -30,6 +36,7 @@ CefComponentExtensionResourceManager::CefComponentExtensionResourceManager() {
       base::Value::AsDictionaryValue(dict), &pdf_viewer_replacements);
   template_replacements_[extension_misc::kPdfExtensionId] =
       std::move(pdf_viewer_replacements);
+#endif
 }
 
 CefComponentExtensionResourceManager::~CefComponentExtensionResourceManager() {}

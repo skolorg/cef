@@ -14,6 +14,7 @@
 #include "libcef/browser/thread_util.h"
 #include "libcef/common/cef_switches.h"
 #include "libcef/common/extensions/extensions_util.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -290,11 +291,15 @@ bool AlloyBrowserContext::UnloadExtension(const CefString& extension_id) {
 }
 
 bool AlloyBrowserContext::IsPrintPreviewSupported() const {
+#if !BUILDFLAG(ENABLE_CEF_PRINTING)
+  return false;
+#else
   CEF_REQUIRE_UIT();
   if (!extensions::PrintPreviewEnabled())
     return false;
 
   return !GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled);
+#endif
 }
 
 content::ResourceContext* AlloyBrowserContext::GetResourceContext() {

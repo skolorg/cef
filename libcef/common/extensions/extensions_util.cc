@@ -5,6 +5,7 @@
 #include "libcef/common/extensions/extensions_util.h"
 
 #include "libcef/common/cef_switches.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,13 +19,20 @@ bool ExtensionsEnabled() {
 }
 
 bool PdfExtensionEnabled() {
+#if !BUILDFLAG(ENABLE_CEF_PDF)
+  return false;
+#else
   static bool enabled =
       ExtensionsEnabled() && !base::CommandLine::ForCurrentProcess()->HasSwitch(
                                  switches::kDisablePdfExtension);
   return enabled;
+#endif
 }
 
 bool PrintPreviewEnabled() {
+#if !BUILDFLAG(ENABLE_CEF_PRINTING)
+  return false;
+#else
 #if defined(OS_MAC)
   // Not currently supported on macOS.
   return false;
@@ -39,6 +47,7 @@ bool PrintPreviewEnabled() {
 
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnablePrintPreview);
+#endif
 #endif
 }
 

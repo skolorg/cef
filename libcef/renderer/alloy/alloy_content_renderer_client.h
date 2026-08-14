@@ -20,6 +20,8 @@
 #include "base/task/current_thread.h"
 #include "chrome/common/plugin.mojom.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "build/build_config.h"
+#include "cef/libcef/features/features.h"
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
@@ -44,7 +46,9 @@ class WebCacheImpl;
 
 class CefBrowserManager;
 class CefRenderThreadObserver;
+#if BUILDFLAG(ENABLE_CEF_PDF)
 class ChromePDFPrintClient;
+#endif
 class SpellCheck;
 
 class AlloyContentRendererClient
@@ -135,7 +139,9 @@ class AlloyContentRendererClient
   std::unique_ptr<SpellCheck> spellcheck_;
   std::unique_ptr<visitedlink::VisitedLinkReader> visited_link_slave_;
 
+#if BUILDFLAG(ENABLE_CEF_PDF)
   std::unique_ptr<ChromePDFPrintClient> pdf_print_client_;
+#endif
 
   std::unique_ptr<extensions::ExtensionsClient> extensions_client_;
   std::unique_ptr<extensions::CefExtensionsRendererClient>
