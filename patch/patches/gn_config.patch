@@ -101,6 +101,15 @@ index 63e7ca2c10c1..14f777c10cd6 100644
      if (enable_extensions) {
        sources += [
          "$root_gen_dir/chrome/extensions_resources.pak",
+@@ -287,7 +292,7 @@ template("chrome_extra_paks") {
+         "//extensions:extensions_resources",
+       ]
+     }
+-    if (enable_plugins) {
++    if (enable_plugins && enable_pdf) {
+       sources += [ "$root_gen_dir/chrome/pdf_resources.pak" ]
+       deps += [ "//chrome/browser/resources/pdf:resources" ]
+     }
 diff --git chrome/chrome_repack_locales.gni chrome/chrome_repack_locales.gni
 index a64a23560460..b08eee1f789a 100644
 --- chrome/chrome_repack_locales.gni
