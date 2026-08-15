@@ -1,7 +1,7 @@
-diff --git a/chrome/common/printing/printer_capabilities.cc b/chrome/common/printing/printer_capabilities.cc
+diff --git chrome/common/printing/printer_capabilities.cc chrome/common/printing/printer_capabilities.cc
 index 45eefbbf0..73622a8fc 100644
---- a/chrome/common/printing/printer_capabilities.cc
-+++ b/chrome/common/printing/printer_capabilities.cc
+--- chrome/common/printing/printer_capabilities.cc
++++ chrome/common/printing/printer_capabilities.cc
 @@ -29,4 +29,5 @@
  #include "base/strings/string_util.h"
  #include "base/strings/utf_string_conversions.h"
