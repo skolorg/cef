@@ -1,15 +1,7 @@
 diff --git chrome/chrome_paks.gni chrome/chrome_paks.gni
 --- chrome/chrome_paks.gni
 +++ chrome/chrome_paks.gni
-@@ -4,6 +4,7 @@
- 
- import("//build/config/chromeos/ui_mode.gni")
- import("//build/config/locales.gni")
- import("//cef/libcef/features/features.gni")
-+import("//pdf/features.gni")
- import("//chrome/browser/buildflags.gni")
- import("//chrome/browser/resources/pdf/ink/ink.gni")
-@@ -292,7 +293,7 @@ template("chrome_extra_paks") {
+@@ -288,7 +288,7 @@ template("chrome_extra_paks") {
          "//extensions:extensions_resources",
        ]
      }
