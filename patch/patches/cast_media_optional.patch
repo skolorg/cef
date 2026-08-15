@@ -1,5 +1,5 @@
 diff --git chrome/browser/BUILD.gn chrome/browser/BUILD.gn
-index 3647247a4..ebb631234 100755
+index 3647247a4..ebb631234 100644
 --- chrome/browser/BUILD.gn
 +++ chrome/browser/BUILD.gn
 @@ -733,8 +733,6 @@ static_library("browser") {
@@ -91,7 +91,7 @@ index 3647247a4..ebb631234 100755
        sources += [
          "speech/extension_api/tts_engine_extension_observer_chromeos.cc",
 diff --git chrome/utility/BUILD.gn chrome/utility/BUILD.gn
-index 3c1c93059..b678a7731 100755
+index 3c1c93059..b678a7731 100644
 --- chrome/utility/BUILD.gn
 +++ chrome/utility/BUILD.gn
 @@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
@@ -125,7 +125,7 @@ index 3c1c93059..b678a7731 100755
      deps += [
        "//components/services/quarantine",
 diff --git chrome/utility/services.cc chrome/utility/services.cc
-index ebda0b60b..3f58447f7 100755
+index ebda0b60b..3f58447f7 100644
 --- chrome/utility/services.cc
 +++ chrome/utility/services.cc
 @@ -52,7 +52,10 @@
