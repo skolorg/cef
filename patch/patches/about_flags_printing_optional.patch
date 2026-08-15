@@ -1,0 +1,33 @@
+diff --git chrome/browser/about_flags.cc chrome/browser/about_flags.cc
+--- chrome/browser/about_flags.cc
++++ chrome/browser/about_flags.cc
+@@ -4204,11 +4204,13 @@ const FeatureEntry kFeatureEntries[] = {
+      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWA)},
+ #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
+ #if defined(OS_WIN)
+     {"gdi-text-printing", flag_descriptions::kGdiTextPrinting,
+      flag_descriptions::kGdiTextPrintingDescription, kOsWin,
+      FEATURE_VALUE_TYPE(features::kGdiTextPrinting)},
+ #endif  // defined(OS_WIN)
++#endif  // BUILDFLAG(ENABLE_PRINTING)
+ 
+ #if defined(OS_WIN) || defined(OS_MAC)
+     {"new-usb-backend", flag_descriptions::kNewUsbBackendName,
+@@ -6898,6 +6900,7 @@ const FeatureEntry kFeatureEntries[] = {
+      FEATURE_VALUE_TYPE(ash::features::kEnhancedDeskAnimations)},
+ #endif
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
+ #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+     defined(OS_CHROMEOS)
+     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
+@@ -6905,6 +6908,7 @@ const FeatureEntry kFeatureEntries[] = {
+      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,
+      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
+ #endif
++#endif  // BUILDFLAG(ENABLE_PRINTING)
+ 
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
+     {"omnibox-rich-entities-in-launcher",
