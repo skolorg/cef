@@ -5,12 +5,45 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+from datetime import datetime
 from file_util import make_dir, write_file
 from gclient_util import *
 from gn_args import GetAllPlatformConfigs, GetConfigFileContents
 import issue_1999
 import os
 import sys
+
+
+def FormatDuration(duration):
+  total_milliseconds = int(round(duration.total_seconds() * 1000))
+  hours, remainder = divmod(total_milliseconds, 60 * 60 * 1000)
+  minutes, remainder = divmod(remainder, 60 * 1000)
+  seconds, milliseconds = divmod(remainder, 1000)
+  return '%02d:%02d:%02d.%03d' % (hours, minutes, seconds, milliseconds)
+
+
+def StartStage(description):
+  started_at = datetime.now()
+  print("\n%s..." % description)
+  print("-------- Stage started at %s" %
+        started_at.strftime('%Y-%m-%d %H:%M:%S'))
+  return started_at
+
+
+def FinishStage(description, started_at):
+  completed_at = datetime.now()
+  print("-------- %s finished at %s (elapsed %s)" %
+        (description, completed_at.strftime('%Y-%m-%d %H:%M:%S'),
+         FormatDuration(completed_at - started_at)))
+
+
+def RunTimedAction(description, directory, command):
+  started_at = StartStage(description)
+  try:
+    RunAction(directory, command)
+  finally:
+    FinishStage(description, started_at)
+
 
 # The CEF directory is the parent directory of _this_ script.
 cef_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
@@ -28,26 +61,24 @@ else:
   print('Unknown operating system platform')
   sys.exit()
 
-print("\nGenerating CEF version header file...")
 cmd = [sys.executable, 'tools/make_version_header.py', 'include/cef_version.h']
-RunAction(cef_dir, cmd)
+RunTimedAction('Generating CEF version header file', cef_dir, cmd)
 
-print("\nPatching build configuration and source files for CEF...")
 cmd = [sys.executable, 'tools/patcher.py']
-RunAction(cef_dir, cmd)
+RunTimedAction('Patching build configuration and source files for CEF',
+               cef_dir, cmd)
 
 if platform == 'linux' and 'CEF_INSTALL_SYSROOT' in os.environ:
   for arch in os.environ['CEF_INSTALL_SYSROOT'].split(','):
     if len(arch) == 0:
       continue
-    print("\nInstalling %s sysroot environment..." % arch)
     cmd = [
         sys.executable, 'build/linux/sysroot_scripts/install-sysroot.py',
         '--arch', arch
     ]
-    RunAction(src_dir, cmd)
+    RunTimedAction('Installing %s sysroot environment' % arch, src_dir, cmd)
 
-print("\nGenerating CEF project files...")
+project_files_started_at = StartStage('Generating CEF project files')
 
 gn_args = {}
 
@@ -130,30 +161,32 @@ if platform == 'windows':
     gn_args['visual_studio_runtime_dirs'] = os.environ['VS_CRT_ROOT']
     gn_args['windows_sdk_path'] = os.environ['SDK_ROOT']
 
-configs = GetAllPlatformConfigs(gn_args)
-for dir, config in configs.items():
-  # Create out directories and write the args.gn file.
-  out_path = os.path.join(src_dir, 'out', dir)
-  make_dir(out_path, False)
-  args_gn_path = os.path.join(out_path, 'args.gn')
-  args_gn_contents = GetConfigFileContents(config)
-  write_file(args_gn_path, args_gn_contents)
+try:
+  configs = GetAllPlatformConfigs(gn_args)
+  for dir, config in configs.items():
+    # Create out directories and write the args.gn file.
+    out_path = os.path.join(src_dir, 'out', dir)
+    make_dir(out_path, False)
+    args_gn_path = os.path.join(out_path, 'args.gn')
+    args_gn_contents = GetConfigFileContents(config)
+    write_file(args_gn_path, args_gn_contents)
 
-  # Generate the Ninja config.
-  cmd = ['gn', 'gen', os.path.join('out', dir)]
-  if 'GN_ARGUMENTS' in os.environ.keys():
-    cmd.extend(os.environ['GN_ARGUMENTS'].split(' '))
-  RunAction(src_dir, cmd)
-  if platform == 'windows':
-    issue_1999.apply(out_path)
+    # Generate the Ninja config.
+    cmd = ['gn', 'gen', os.path.join('out', dir)]
+    if 'GN_ARGUMENTS' in os.environ.keys():
+      cmd.extend(os.environ['GN_ARGUMENTS'].split(' '))
+    RunAction(src_dir, cmd)
+    if platform == 'windows':
+      issue_1999.apply(out_path)
+finally:
+  FinishStage('Generating CEF project files', project_files_started_at)
 
 gn_dir = list(configs.keys())[0]
 out_gn_path = os.path.join(src_dir, 'out', gn_dir)
 gn_path = os.path.join(out_gn_path, 'args.gn')
-print("\nGenerating CEF buildinfo header file...")
 cmd = [
     sys.executable, 'tools/make_config_header.py', '--header',
     'include/cef_config.h', '--cef_gn_config', gn_path
 ]
 
-RunAction(cef_dir, cmd)
+RunTimedAction('Generating CEF buildinfo header file', cef_dir, cmd)

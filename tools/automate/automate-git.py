@@ -53,6 +53,36 @@ def msg(message):
   sys.stdout.write('--> ' + message + "\n")
 
 
+def format_duration(duration):
+  """ Format a timedelta without truncating durations longer than one day. """
+  total_milliseconds = int(round(duration.total_seconds() * 1000))
+  hours, remainder = divmod(total_milliseconds, 60 * 60 * 1000)
+  minutes, remainder = divmod(remainder, 60 * 1000)
+  seconds, milliseconds = divmod(remainder, 1000)
+  return '%02d:%02d:%02d.%03d' % (hours, minutes, seconds, milliseconds)
+
+
+def timed_check_call(*args, **kwargs):
+  """ Run subprocess.check_call with start, finish and elapsed timestamps. """
+  started_at = datetime.now()
+  status = 'succeeded'
+  sys.stdout.write('-------- Process started at %s\n' %
+                   started_at.strftime('%Y-%m-%d %H:%M:%S'))
+  sys.stdout.flush()
+  try:
+    return subprocess.check_call(*args, **kwargs)
+  except BaseException:
+    status = 'failed'
+    raise
+  finally:
+    completed_at = datetime.now()
+    sys.stdout.write(
+        '-------- Process %s at %s (elapsed %s)\n' %
+        (status, completed_at.strftime('%Y-%m-%d %H:%M:%S'),
+         format_duration(completed_at - started_at)))
+    sys.stdout.flush()
+
+
 def run(command_line, working_dir, depot_tools_dir=None, output_file=None):
   """ Runs the specified command. """
   # add depot_tools to the path
@@ -66,12 +96,12 @@ def run(command_line, working_dir, depot_tools_dir=None, output_file=None):
     args = shlex.split(command_line.replace('\\', '\\\\'))
 
     if not output_file:
-      return subprocess.check_call(
+      return timed_check_call(
           args, cwd=working_dir, env=env, shell=(sys.platform == 'win32'))
     try:
       msg('Writing %s' % output_file)
       with open(output_file, 'w', encoding='utf-8') as fp:
-        return subprocess.check_call(
+        return timed_check_call(
             args,
             cwd=working_dir,
             env=env,
