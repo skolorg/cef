@@ -8,7 +8,12 @@
 
 #include "include/cef_request_context.h"
 #include "libcef/browser/browser_context.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
 #include "libcef/browser/media_router/media_router_impl.h"
+#else
+class CefMediaRouterImpl;
+#endif
 #include "libcef/browser/net_service/cookie_manager_impl.h"
 #include "libcef/browser/thread_util.h"
 
@@ -163,8 +168,10 @@ class CefRequestContextImpl : public CefRequestContext {
   void InitializeCookieManagerInternal(
       CefRefPtr<CefCookieManagerImpl> cookie_manager,
       CefRefPtr<CefCompletionCallback> callback);
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
   void InitializeMediaRouterInternal(CefRefPtr<CefMediaRouterImpl> media_router,
                                      CefRefPtr<CefCompletionCallback> callback);
+#endif
 
   CefBrowserContext* browser_context() const;
 

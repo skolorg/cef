@@ -85,6 +85,10 @@ buildflag_header("features") {
     "ENABLE_CEF_PRINTING=$cef_enable_printing",
     "ENABLE_CEF_PDF=$cef_enable_pdf",
     "ENABLE_CEF_WEBRTC=$cef_enable_webrtc",
+    "ENABLE_CEF_MEDIA_ROUTER=$cef_enable_media_router",
+    "ENABLE_CEF_CAST=$cef_enable_cast",
+    "ENABLE_CEF_MEDIA_CAPTURE=$cef_enable_media_capture",
+    "ENABLE_CEF_AUDIO_LOOPBACK=$cef_enable_audio_loopback",
   ]
 }
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "include/cef_request_context_handler.h"
+#include "cef/libcef/features/features.h"
 #include "libcef/browser/iothread_state.h"
 #include "libcef/browser/request_context_handler_map.h"
 
@@ -238,7 +239,9 @@ class CefBrowserContext {
  private:
   scoped_refptr<CefIOThreadState> iothread_state_;
   CookieableSchemes cookieable_schemes_;
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
   std::unique_ptr<CefMediaRouterManager> media_router_manager_;
+#endif
 
   // CefRequestContextImpl objects referencing this object.
   std::set<CefRequestContextImpl*> request_context_set_;

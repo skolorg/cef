@@ -586,9 +586,15 @@ CefRefPtr<CefExtension> CefRequestContextImpl::GetExtension(
 
 CefRefPtr<CefMediaRouter> CefRequestContextImpl::GetMediaRouter(
     CefRefPtr<CefCompletionCallback> callback) {
+#if !BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
+  if (callback)
+    callback->OnComplete();
+  return nullptr;
+#else
   CefRefPtr<CefMediaRouterImpl> media_router = new CefMediaRouterImpl();
   InitializeMediaRouterInternal(media_router, callback);
   return media_router.get();
+#endif
 }
 
 void CefRequestContextImpl::OnRenderFrameCreated(int render_process_id,
@@ -789,6 +795,7 @@ void CefRequestContextImpl::InitializeCookieManagerInternal(
                         cookie_manager, callback));
 }
 
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
 void CefRequestContextImpl::InitializeMediaRouterInternal(
     CefRefPtr<CefMediaRouterImpl> media_router,
     CefRefPtr<CefCompletionCallback> callback) {
@@ -802,6 +809,7 @@ void CefRequestContextImpl::InitializeMediaRouterInternal(
                         },
                         media_router, callback));
 }
+#endif
 
 CefBrowserContext* CefRequestContextImpl::browser_context() const {
   return browser_context_;

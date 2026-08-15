@@ -21,12 +21,15 @@
 #include "libcef/common/extensions/extensions_client.h"
 #include "libcef/common/extensions/extensions_util.h"
 #include "libcef/common/net/net_resource_provider.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#endif
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -125,7 +128,9 @@ void AlloyBrowserMainParts::PreMainMessageLoopStart() {
   ChromeBrowserMainPartsWin::SetupInstallerUtilStrings();
 #endif  // defined(OS_WIN)
 
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
   media_router::ChromeMediaRouterFactory::DoPlatformInit();
+#endif
 }
 
 void AlloyBrowserMainParts::PostMainMessageLoopStart() {

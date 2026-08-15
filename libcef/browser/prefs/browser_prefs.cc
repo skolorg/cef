@@ -9,7 +9,9 @@
 #include "libcef/browser/browser_host_base.h"
 #include "libcef/browser/context.h"
 #if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
 #include "libcef/browser/media_capture_devices_dispatcher.h"
+#endif
 #endif
 #include "libcef/browser/prefs/pref_store.h"
 #include "libcef/browser/prefs/renderer_prefs.h"
@@ -24,7 +26,9 @@
 #include "chrome/browser/accessibility/accessibility_ui.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/media/media_device_id_salt.h"
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
 #include "chrome/browser/media/router/media_router_feature.h"
+#endif
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -226,12 +230,14 @@ std::unique_ptr<PrefService> CreatePrefService(Profile* profile,
   //    existing registration method.
 
   // Default preferences.
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
   CefMediaCaptureDevicesDispatcher::RegisterPrefs(registry.get());
 #endif
   certificate_transparency::prefs::RegisterPrefs(registry.get());
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry.get());
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
   media_router::RegisterLocalStatePrefs(registry.get());
+#endif
   PluginInfoHostImpl::RegisterUserPrefs(registry.get());
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry.get());
   ProfileNetworkContextService::RegisterLocalStatePrefs(registry.get());
@@ -270,7 +276,9 @@ std::unique_ptr<PrefService> CreatePrefService(Profile* profile,
     extensions::ExtensionPrefs::RegisterProfilePrefs(registry.get());
     HostContentSettingsMap::RegisterProfilePrefs(registry.get());
     language::LanguagePrefs::RegisterProfilePrefs(registry.get());
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
     media_router::RegisterProfilePrefs(registry.get());
+#endif
     MediaDeviceIDSalt::RegisterProfilePrefs(registry.get());
     ProfileNetworkContextService::RegisterProfilePrefs(registry.get());
     safe_browsing::RegisterProfilePrefs(registry.get());

@@ -7,6 +7,13 @@ declare_args() {
   cef_enable_printing = true
   cef_enable_pdf = true
   cef_enable_webrtc = true
+  # Build the CEF Media Router API and its browser-side integration.
+  cef_enable_media_router = true
+  # Keep Cast/DIAL provider activation independent from the CEF API.
+  cef_enable_cast = true
+  # Build optional CEF media-capture and audio-loopback integration.
+  cef_enable_media_capture = true
+  cef_enable_audio_loopback = true
 
   # Enables base target customizations necessary for distribution of the
   # cef_sandbox static library. This value will be set via gn_args.py for the

@@ -24,7 +24,9 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/browser_process.h"
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
 #include "chrome/browser/media/router/media_router_feature.h"
+#endif
 #if BUILDFLAG(ENABLE_CEF_PDF)
 #include "chrome/child/pdf_child_init.h"
 #endif
@@ -275,6 +277,7 @@ bool AlloyMainDelegate::BasicStartupComplete(int* exit_code) {
 
     std::vector<std::string> enable_features;
 
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER) && BUILDFLAG(ENABLE_CEF_CAST)
     if (media_router::kDialMediaRouteProvider.default_state ==
         base::FEATURE_DISABLED_BY_DEFAULT) {
       // Enable discovery of DIAL devices.
@@ -299,6 +302,7 @@ bool AlloyMainDelegate::BasicStartupComplete(int* exit_code) {
       command_line->AppendSwitchASCII(switches::kEnableFeatures,
                                       enable_features_str);
     }
+#endif
   }
 
   if (application_) {

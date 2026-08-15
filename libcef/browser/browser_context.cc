@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "libcef/browser/context.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
 #include "libcef/browser/media_router/media_router_manager.h"
+#endif
 #include "libcef/browser/request_context_impl.h"
 #include "libcef/browser/thread_util.h"
 #include "libcef/common/cef_switches.h"
@@ -211,8 +214,10 @@ void CefBrowserContext::Shutdown() {
   // Unregister the context first to avoid re-entrancy during shutdown.
   g_manager.Get().RemoveImpl(this, cache_path_);
 
+#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
   // Destroy objects that may hold references to the MediaRouter.
   media_router_manager_.reset();
+#endif
 }
 
 void CefBrowserContext::AddCefRequestContext(CefRequestContextImpl* context) {
@@ -488,10 +493,14 @@ network::mojom::NetworkContext* CefBrowserContext::GetNetworkContext() {
 
 CefMediaRouterManager* CefBrowserContext::GetMediaRouterManager() {
   CEF_REQUIRE_UIT();
+#if !BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
+  return nullptr;
+#else
   if (!media_router_manager_) {
     media_router_manager_.reset(new CefMediaRouterManager(AsBrowserContext()));
   }
   return media_router_manager_.get();
+#endif
 }
 
 CefBrowserContext::CookieableSchemes CefBrowserContext::GetCookieableSchemes()
