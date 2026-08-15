@@ -1,0 +1,17 @@
+diff --git chrome/browser/extensions/api/resources_private/resources_private_api.cc chrome/browser/extensions/api/resources_private/resources_private_api.cc
+--- chrome/browser/extensions/api/resources_private/resources_private_api.cc
++++ chrome/browser/extensions/api/resources_private/resources_private_api.cc
+@@ -56,6 +56,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
+     case api::resources_private::COMPONENT_IDENTITY:
+       AddStringsForIdentity(dict.get());
+       break;
++#if BUILDFLAG(ENABLE_PDF)
+     case api::resources_private::COMPONENT_PDF: {
+       pdf_extension_util::AddStrings(pdf_extension_util::PdfViewerContext::kAll,
+                                      dict.get());
+@@ -63,6 +64,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
+       pdf_extension_util::AddAdditionalData(dict.get());
+     } break;
++#endif  // BUILDFLAG(ENABLE_PDF)
+     case api::resources_private::COMPONENT_NONE:
+       NOTREACHED();
