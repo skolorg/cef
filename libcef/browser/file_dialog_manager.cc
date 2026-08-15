@@ -10,6 +10,7 @@
 #include "include/cef_dialog_handler.h"
 #include "libcef/browser/alloy/alloy_browser_host_impl.h"
 #include "libcef/browser/thread_util.h"
+#include "cef/libcef/features/features.h"
 
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
@@ -235,6 +236,12 @@ void CefFileDialogManager::RunFileChooserInternal(
     const CefFileDialogRunner::FileChooserParams& params,
     CefFileDialogRunner::RunFileChooserCallback callback) {
   CEF_REQUIRE_UIT();
+
+#if !BUILDFLAG(ENABLE_CEF_FILE_DIALOGS)
+  // Keep the CEF callback contract intact while compiling out all dialog UI.
+  std::move(callback).Run(0, std::vector<base::FilePath>());
+  return;
+#endif
 
   if (file_chooser_pending_) {
     // Dismiss the new dialog immediately.

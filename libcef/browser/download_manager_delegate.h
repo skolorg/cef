@@ -8,7 +8,10 @@
 
 #include <set>
 
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_DOWNLOADS)
 #include "libcef/browser/browser_host_base.h"
+#endif
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +21,7 @@
 
 class AlloyBrowserHostImpl;
 
+#if BUILDFLAG(ENABLE_CEF_DOWNLOADS)
 class CefDownloadManagerDelegate : public download::DownloadItem::Observer,
                                    public content::DownloadManager::Observer,
                                    public content::DownloadManagerDelegate,
@@ -61,5 +65,22 @@ class CefDownloadManagerDelegate : public download::DownloadItem::Observer,
 
   DISALLOW_COPY_AND_ASSIGN(CefDownloadManagerDelegate);
 };
+#else
+// Minimal delegate used when CEF download callbacks and wrappers are omitted.
+// It cancels every target determination without changing the public CEF ABI.
+class CefDownloadManagerDelegate : public content::DownloadManagerDelegate {
+ public:
+  explicit CefDownloadManagerDelegate(content::DownloadManager* manager);
+  ~CefDownloadManagerDelegate() override;
+
+ private:
+  bool DetermineDownloadTarget(
+      download::DownloadItem* item,
+      content::DownloadTargetCallback* callback) override;
+  void GetNextId(content::DownloadIdCallback callback) override;
+
+  DISALLOW_COPY_AND_ASSIGN(CefDownloadManagerDelegate);
+};
+#endif
 
 #endif  // CEF_LIBCEF_BROWSER_DOWNLOAD_MANAGER_DELEGATE_H_

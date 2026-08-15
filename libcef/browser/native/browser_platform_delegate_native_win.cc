@@ -10,8 +10,13 @@
 
 #include "libcef/browser/alloy/alloy_browser_host_impl.h"
 #include "libcef/browser/context.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_FILE_DIALOGS)
 #include "libcef/browser/native/file_dialog_runner_win.h"
+#endif
+#if BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
 #include "libcef/browser/native/javascript_dialog_runner_win.h"
+#endif
 #include "libcef/browser/native/menu_runner_win.h"
 #include "libcef/browser/native/window_delegate_view.h"
 #include "libcef/browser/thread_util.h"
@@ -407,12 +412,20 @@ CefEventHandle CefBrowserPlatformDelegateNativeWin::GetEventHandle(
 
 std::unique_ptr<CefFileDialogRunner>
 CefBrowserPlatformDelegateNativeWin::CreateFileDialogRunner() {
+#if BUILDFLAG(ENABLE_CEF_FILE_DIALOGS)
   return base::WrapUnique(new CefFileDialogRunnerWin);
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<CefJavaScriptDialogRunner>
 CefBrowserPlatformDelegateNativeWin::CreateJavaScriptDialogRunner() {
+#if BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
   return base::WrapUnique(new CefJavaScriptDialogRunnerWin);
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<CefMenuRunner>

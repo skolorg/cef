@@ -9,8 +9,13 @@
 
 #include "libcef/browser/alloy/alloy_browser_host_impl.h"
 #include "libcef/browser/context.h"
+#include "cef/libcef/features/features.h"
+#if BUILDFLAG(ENABLE_CEF_FILE_DIALOGS)
 #include "libcef/browser/native/file_dialog_runner_mac.h"
+#endif
+#if BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
 #include "libcef/browser/native/javascript_dialog_runner_mac.h"
+#endif
 #include "libcef/browser/native/menu_runner_mac.h"
 #include "libcef/browser/thread_util.h"
 
@@ -360,12 +365,20 @@ CefEventHandle CefBrowserPlatformDelegateNativeMac::GetEventHandle(
 
 std::unique_ptr<CefFileDialogRunner>
 CefBrowserPlatformDelegateNativeMac::CreateFileDialogRunner() {
+#if BUILDFLAG(ENABLE_CEF_FILE_DIALOGS)
   return base::WrapUnique(new CefFileDialogRunnerMac);
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<CefJavaScriptDialogRunner>
 CefBrowserPlatformDelegateNativeMac::CreateJavaScriptDialogRunner() {
+#if BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
   return base::WrapUnique(new CefJavaScriptDialogRunnerMac);
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<CefMenuRunner>

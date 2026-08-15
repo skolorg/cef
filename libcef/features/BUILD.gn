@@ -89,6 +89,9 @@ buildflag_header("features") {
     "ENABLE_CEF_CAST=$cef_enable_cast",
     "ENABLE_CEF_MEDIA_CAPTURE=$cef_enable_media_capture",
     "ENABLE_CEF_AUDIO_LOOPBACK=$cef_enable_audio_loopback",
+    "ENABLE_CEF_FILE_DIALOGS=$cef_enable_file_dialogs",
+    "ENABLE_CEF_JAVASCRIPT_DIALOGS=$cef_enable_javascript_dialogs",
+    "ENABLE_CEF_DOWNLOADS=$cef_enable_downloads",
   ]
 }
 

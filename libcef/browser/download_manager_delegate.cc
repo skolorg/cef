@@ -4,6 +4,10 @@
 
 #include "libcef/browser/download_manager_delegate.h"
 
+#include "cef/libcef/features/features.h"
+
+#if BUILDFLAG(ENABLE_CEF_DOWNLOADS)
+
 #include "include/cef_download_handler.h"
 #include "libcef/browser/alloy/alloy_browser_host_impl.h"
 #include "libcef/browser/context.h"
@@ -460,3 +464,35 @@ AlloyBrowserHostImpl* CefDownloadManagerDelegate::GetBrowser(
   DCHECK(!content::DownloadItemUtils::GetWebContents(item));
   return nullptr;
 }
+
+#else
+
+#include <utility>
+
+#include "components/download/public/common/download_interrupt_reasons.h"
+
+CefDownloadManagerDelegate::CefDownloadManagerDelegate(
+    content::DownloadManager* manager) {
+  (void)manager;
+}
+
+CefDownloadManagerDelegate::~CefDownloadManagerDelegate() = default;
+
+bool CefDownloadManagerDelegate::DetermineDownloadTarget(
+    download::DownloadItem* item,
+    content::DownloadTargetCallback* callback) {
+  (void)item;
+  std::move(*callback).Run(
+      base::FilePath(), download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      download::DownloadItem::MixedContentStatus::UNKNOWN, base::FilePath(),
+      base::nullopt, download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+  return true;
+}
+
+void CefDownloadManagerDelegate::GetNextId(
+    content::DownloadIdCallback callback) {
+  std::move(callback).Run(download::DownloadItem::kInvalidId);
+}
+
+#endif

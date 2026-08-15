@@ -9,6 +9,7 @@
 
 #include "libcef/browser/alloy/alloy_browser_host_impl.h"
 #include "libcef/browser/thread_util.h"
+#include "cef/libcef/features/features.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -86,6 +87,11 @@ void CefJavaScriptDialogManager::RunJavaScriptDialog(
     const base::string16& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
+#if !BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
+  // Suppression is the Chromium contract for a build without dialog UI.
+  *did_suppress_message = true;
+  return;
+#else
   const GURL& origin_url = render_frame_host->GetLastCommittedURL();
 
   CefRefPtr<CefClient> client = browser_->GetClient();
@@ -136,6 +142,7 @@ void CefJavaScriptDialogManager::RunJavaScriptDialog(
       browser_, message_type, display_url, message_text, default_prompt_text,
       base::BindOnce(&CefJavaScriptDialogManager::DialogClosed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+#endif
 }
 
 void CefJavaScriptDialogManager::RunBeforeUnloadDialog(
@@ -143,6 +150,11 @@ void CefJavaScriptDialogManager::RunBeforeUnloadDialog(
     content::RenderFrameHost* render_frame_host,
     bool is_reload,
     DialogClosedCallback callback) {
+#if !BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
+  // Accept before-unload navigation when confirmation UI is unavailable.
+  std::move(callback).Run(true, base::string16());
+  return;
+#else
   if (browser_->destruction_state() >=
       AlloyBrowserHostImpl::DESTRUCTION_STATE_ACCEPTED) {
     // Currently destroying the browser. Accept the unload without showing
@@ -193,11 +205,15 @@ void CefJavaScriptDialogManager::RunBeforeUnloadDialog(
       base::string16(),  // default_prompt_text
       base::BindOnce(&CefJavaScriptDialogManager::DialogClosed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+#endif
 }
 
 void CefJavaScriptDialogManager::CancelDialogs(
     content::WebContents* web_contents,
     bool reset_state) {
+#if !BUILDFLAG(ENABLE_CEF_JAVASCRIPT_DIALOGS)
+  return;
+#else
   CefRefPtr<CefClient> client = browser_->GetClient();
   if (client.get()) {
     CefRefPtr<CefJSDialogHandler> handler = client->GetJSDialogHandler();
@@ -211,6 +227,7 @@ void CefJavaScriptDialogManager::CancelDialogs(
     runner_->Cancel();
     dialog_running_ = false;
   }
+#endif
 }
 
 void CefJavaScriptDialogManager::DialogClosed(

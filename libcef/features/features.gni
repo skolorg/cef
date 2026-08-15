@@ -14,6 +14,12 @@ declare_args() {
   # Build optional CEF media-capture and audio-loopback integration.
   cef_enable_media_capture = true
   cef_enable_audio_loopback = true
+  # Build CEF file-dialog integration and platform dialog runners.
+  cef_enable_file_dialogs = true
+  # Build CEF JavaScript dialog integration and platform dialog runners.
+  cef_enable_javascript_dialogs = true
+  # Build CEF download callbacks and download item wrappers.
+  cef_enable_downloads = true
 
   # Enables base target customizations necessary for distribution of the
   # cef_sandbox static library. This value will be set via gn_args.py for the
