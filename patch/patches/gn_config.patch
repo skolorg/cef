@@ -88,7 +88,6 @@ index 63e7ca2c10c1..14f777c10cd6 100644
  import("//build/config/locales.gni")
 +import("//cef/libcef/features/features.gni")
 +import("//pdf/features.gni")
-+import("//pdf/features.gni")
  import("//chrome/browser/buildflags.gni")
  import("//chrome/browser/resources/pdf/ink/ink.gni")
  import("//chrome/common/features.gni")
