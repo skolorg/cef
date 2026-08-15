@@ -1,0 +1,165 @@
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 3647247a4..ebb631234 100755
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -733,8 +733,6 @@ static_library("browser") {
+     "media/output_protection_proxy.h",
+     "media/platform_verification_impl.cc",
+     "media/platform_verification_impl.h",
+-    "media/router/media_router_feature.cc",
+-    "media/router/media_router_feature.h",
+     "media/webrtc/audio_debug_recordings_handler.cc",
+     "media/webrtc/audio_debug_recordings_handler.h",
+     "media/webrtc/camera_pan_tilt_zoom_permission_context.cc",
+@@ -5371,8 +5369,6 @@ static_library("browser") {
+ 
+   if (is_win || is_mac || is_linux || is_chromeos) {
+     sources += [
+-      "media/cast_mirroring_service_host.cc",
+-      "media/cast_mirroring_service_host.h",
+       "media/offscreen_tab.cc",
+       "media/offscreen_tab.h",
+       "payments/chrome_payment_request_delegate.cc",
+@@ -5387,15 +5383,25 @@ static_library("browser") {
+     deps += [
+       "//chrome/browser/ui/webui/discards:mojo_bindings",
+       "//components/autofill/content/browser/webauthn",
+-      "//components/media_router/browser",
+-      "//components/mirroring/browser",
+-      "//components/mirroring/mojom:host",
+-      "//components/mirroring/mojom:service",
+-      "//components/mirroring/service:mirroring_service",
+       "//components/payments/content",
+       "//components/payments/content:utils",
+-      "//media/cast:net",
+     ]
++    if (cef_enable_media_router) {
++      sources += [
++        "media/cast_mirroring_service_host.cc",
++        "media/cast_mirroring_service_host.h",
++        "media/router/media_router_feature.cc",
++        "media/router/media_router_feature.h",
++      ]
++      deps += [
++        "//components/media_router/browser",
++        "//components/mirroring/browser",
++        "//components/mirroring/mojom:host",
++        "//components/mirroring/mojom:service",
++        "//components/mirroring/service:mirroring_service",
++        "//media/cast:net",
++      ]
++    }
+   }
+ 
+   if (is_win || is_mac || (is_chromeos_ash && use_dbus)) {
+@@ -5638,7 +5644,7 @@ static_library("browser") {
+     }
+   }
+ 
+-  if (enable_media_remoting) {
++  if (enable_media_remoting && cef_enable_cast) {
+     sources += [
+       "media/cast_remoting_connector.cc",
+       "media/cast_remoting_connector.h",
+@@ -5848,17 +5854,21 @@ static_library("browser") {
+       "//chrome/common/extensions/api:extensions_features",
+       "//components/drive",
+       "//components/guest_view/browser",
+-      "//media/cast:sender",
+-
+-      # TODO(crbug.com / 879012): mirroring shouldn't depend on enable_extensions.
+-      "//components/mirroring/browser",
+-      "//components/mirroring/mojom:host",
+-      "//components/mirroring/mojom:service",
+-      "//components/mirroring/service:mirroring_service",
+       "//extensions/components/javascript_dialog_extensions_client",
+       "//google_apis/drive",
+       "//services/device/public/mojom",
+     ]
++    if (cef_enable_media_router) {
++      deps += [
++        "//media/cast:sender",
++
++        # TODO(crbug.com / 879012): mirroring shouldn't depend on enable_extensions.
++        "//components/mirroring/browser",
++        "//components/mirroring/mojom:host",
++        "//components/mirroring/mojom:service",
++        "//components/mirroring/service:mirroring_service",
++      ]
++    }
+     if (is_chromeos_ash) {
+       sources += [
+         "speech/extension_api/tts_engine_extension_observer_chromeos.cc",
+diff --git a/chrome/utility/BUILD.gn b/chrome/utility/BUILD.gn
+index 3c1c93059..b678a7731 100755
+--- a/chrome/utility/BUILD.gn
++++ b/chrome/utility/BUILD.gn
+@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
+ import("//build/config/crypto.gni")
+ import("//build/config/features.gni")
+ import("//build/config/sysroot.gni")
++import("//cef/libcef/features/features.gni")
+ import("//chrome/common/features.gni")
+ import("//chromeos/assistant/assistant.gni")
+ import("//extensions/buildflags/buildflags.gni")
+@@ -35,9 +36,9 @@ static_library("utility") {
+     "//chrome:strings",
+     "//chrome/common",
+     "//chrome/common:mojo_bindings",
++    "//cef/libcef/features",
+     "//chrome/services/machine_learning",
+     "//chrome/services/qrcode_generator",
+-    "//components/mirroring/service:mirroring_service",
+     "//components/paint_preview/buildflags",
+     "//components/safe_browsing:buildflags",
+     "//components/search_engines",
+@@ -66,6 +67,10 @@ static_library("utility") {
+     "//ui/base:buildflags",
+   ]
+ 
++  if (cef_enable_media_router) {
++    deps += [ "//components/mirroring/service:mirroring_service" ]
++  }
++
+   if (is_win) {
+     deps += [
+       "//components/services/quarantine",
+diff --git a/chrome/utility/services.cc b/chrome/utility/services.cc
+index ebda0b60b..3f58447f7 100755
+--- a/chrome/utility/services.cc
++++ b/chrome/utility/services.cc
+@@ -52,7 +52,10 @@
+ #include "chrome/common/importer/profile_import.mojom.h"
+ #include "chrome/services/speech/speech_recognition_service_impl.h"
+ #include "chrome/utility/importer/profile_import_impl.h"
++#include "cef/libcef/features/features.h"
++#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
+ #include "components/mirroring/service/mirroring_service.h"
++#endif
+ #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+ #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
+ #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+@@ -191,11 +194,13 @@ auto RunProfileImporter(
+   return std::make_unique<ProfileImportImpl>(std::move(receiver));
+ }
+ 
++#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
+ auto RunMirroringService(
+     mojo::PendingReceiver<mirroring::mojom::MirroringService> receiver) {
+   return std::make_unique<mirroring::MirroringService>(
+       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
+ }
++#endif
+ 
+ auto RunSpeechRecognitionService(
+     mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver) {
+@@ -336,7 +341,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
+ 
+ #if !defined(OS_ANDROID)
+   services.Add(RunProfileImporter);
++#if BUILDFLAG(ENABLE_CEF_MEDIA_ROUTER)
+   services.Add(RunMirroringService);
++#endif
+   services.Add(RunSpeechRecognitionService);
+ #endif
+ 

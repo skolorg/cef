@@ -848,13 +848,10 @@ static_library("libcef_static") {
   }
 
   if (cef_enable_webrtc) {
-    sources += [
-      "libcef/browser/audio_capturer.cc",
-      "libcef/browser/audio_capturer.h",
-    ]
-
     if (cef_enable_audio_loopback) {
       sources += [
+        "libcef/browser/audio_capturer.cc",
+        "libcef/browser/audio_capturer.h",
         "libcef/browser/audio_loopback_stream_creator.cc",
         "libcef/browser/audio_loopback_stream_creator.h",
       ]
@@ -963,6 +960,10 @@ static_library("libcef_static") {
 
   if (cef_enable_media_router) {
     deps += [ "//components/media_router/common/mojom:media_router" ]
+  }
+
+  if (cef_enable_webrtc && cef_enable_audio_loopback) {
+    deps += [ "//components/mirroring/service:mirroring_service" ]
   }
 
   if (cef_enable_pdf) {

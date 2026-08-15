@@ -30,7 +30,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/view_type.h"
 
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
 class CefAudioCapturer;
 #endif
 class CefBrowserInfo;
@@ -371,14 +371,14 @@ class AlloyBrowserHostImpl : public CefBrowserHostBase,
   std::unique_ptr<CefMenuManager> menu_manager_;
 
   // Used for capturing audio for CefAudioHandler.
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
   std::unique_ptr<CefAudioCapturer> audio_capturer_;
 #endif
 
   // Timer for determining when "recently audible" transitions to false. This
   // starts running when a tab stops being audible, and is canceled if it starts
   // being audible again before it fires.
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
   base::OneShotTimer recently_audible_timer_;
 #endif
 };

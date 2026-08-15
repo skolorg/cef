@@ -21,7 +21,7 @@
 #include "libcef/browser/devtools/devtools_manager_delegate.h"
 #include "libcef/browser/extensions/extension_system.h"
 #include "libcef/browser/extensions/extension_web_contents_observer.h"
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
 #include "libcef/browser/media_capture_devices_dispatcher.h"
 #endif
 #include "libcef/browser/net/chrome_scheme_handler.h"
@@ -820,7 +820,7 @@ AlloyContentBrowserClient::CreateQuotaPermissionContext() {
 }
 
 content::MediaObserver* AlloyContentBrowserClient::GetMediaObserver() {
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
   return CefMediaCaptureDevicesDispatcher::GetInstance();
 #else
   return nullptr;

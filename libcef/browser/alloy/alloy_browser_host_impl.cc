@@ -10,7 +10,7 @@
 
 #include "libcef/browser/alloy/alloy_browser_context.h"
 #include "cef/libcef/features/features.h"
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
 #include "libcef/browser/audio_capturer.h"
 #endif
 #include "libcef/browser/browser_context.h"
@@ -19,7 +19,7 @@
 #include "libcef/browser/browser_platform_delegate.h"
 #include "libcef/browser/context.h"
 #include "libcef/browser/devtools/devtools_manager.h"
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
 #include "libcef/browser/media_capture_devices_dispatcher.h"
 #endif
 #include "libcef/browser/native/cursor_util.h"
@@ -785,7 +785,7 @@ void AlloyBrowserHostImpl::DestroyBrowser() {
   menu_manager_.reset(nullptr);
 
   // Delete the audio capturer
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
   recently_audible_timer_.Stop();
   audio_capturer_.reset(nullptr);
 #endif
@@ -1392,7 +1392,7 @@ void AlloyBrowserHostImpl::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   CEF_REQUIRE_UIT();
 
-#if !BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if !BUILDFLAG(ENABLE_CEF_WEBRTC) || !BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
   std::move(callback).Run(
       blink::MediaStreamDevices(),
       blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
@@ -1457,7 +1457,7 @@ bool AlloyBrowserHostImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
-#if !BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if !BUILDFLAG(ENABLE_CEF_WEBRTC) || !BUILDFLAG(ENABLE_CEF_MEDIA_CAPTURE)
   return false;
 #else
   // Check media access permission without prompting the user.
@@ -1518,7 +1518,7 @@ void AlloyBrowserHostImpl::DidFinishNavigation(
 }
 
 void AlloyBrowserHostImpl::OnAudioStateChanged(bool audible) {
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
   if (audible) {
     recently_audible_timer_.Stop();
     StartAudioCapturer();
@@ -1536,7 +1536,7 @@ void AlloyBrowserHostImpl::OnAudioStateChanged(bool audible) {
 }
 
 void AlloyBrowserHostImpl::OnRecentlyAudibleTimerFired() {
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
   audio_capturer_.reset();
 #endif
 }
@@ -1571,7 +1571,7 @@ void AlloyBrowserHostImpl::WebContentsDestroyed() {
 }
 
 void AlloyBrowserHostImpl::StartAudioCapturer() {
-#if BUILDFLAG(ENABLE_CEF_WEBRTC)
+#if BUILDFLAG(ENABLE_CEF_WEBRTC) && BUILDFLAG(ENABLE_CEF_AUDIO_LOOPBACK)
   if (!client_.get() || audio_capturer_)
     return;
 
