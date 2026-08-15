@@ -1,7 +1,7 @@
-diff --git a/content/browser/BUILD.gn b/content/browser/BUILD.gn
+diff --git content/browser/BUILD.gn content/browser/BUILD.gn
 index 84d3efb..ff724db 100644
---- a/content/browser/BUILD.gn
-+++ b/content/browser/BUILD.gn
+--- content/browser/BUILD.gn
++++ content/browser/BUILD.gn
 @@ -17,6 +17,7 @@ import("//device/vr/buildflags/buildflags.gni")
  import("//gpu/vulkan/features.gni")
  import("//media/media_options.gni")
@@ -33,10 +33,10 @@ index 84d3efb..ff724db 100644
    if (is_chromeos_ash) {
      deps += [
        "//chromeos/services/machine_learning/public/cpp",
-diff --git a/third_party/blink/renderer/modules/BUILD.gn b/third_party/blink/renderer/modules/BUILD.gn
+diff --git third_party/blink/renderer/modules/BUILD.gn third_party/blink/renderer/modules/BUILD.gn
 index f9f35f7..cd70fb5 100644
---- a/third_party/blink/renderer/modules/BUILD.gn
-+++ b/third_party/blink/renderer/modules/BUILD.gn
+--- third_party/blink/renderer/modules/BUILD.gn
++++ third_party/blink/renderer/modules/BUILD.gn
 @@ -4,6 +4,7 @@
  
  import("//build/config/chromecast_build.gni")
@@ -64,10 +64,10 @@ index f9f35f7..cd70fb5 100644
    if (is_android) {
      sub_modules += [ "//third_party/blink/renderer/modules/remote_objects" ]
    } else {
-diff --git a/third_party/blink/renderer/modules/modules_idl_files.gni b/third_party/blink/renderer/modules/modules_idl_files.gni
+diff --git third_party/blink/renderer/modules/modules_idl_files.gni third_party/blink/renderer/modules/modules_idl_files.gni
 index 2f3b928..a637881 100644
---- a/third_party/blink/renderer/modules/modules_idl_files.gni
-+++ b/third_party/blink/renderer/modules/modules_idl_files.gni
+--- third_party/blink/renderer/modules/modules_idl_files.gni
++++ third_party/blink/renderer/modules/modules_idl_files.gni
 @@ -4,6 +4,7 @@
  
  import("//third_party/blink/renderer/bindings/bindings.gni")

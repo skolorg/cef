@@ -1,7 +1,7 @@
-diff --git a/content/common/features.gni b/content/common/features.gni
+diff --git content/common/features.gni content/common/features.gni
 index 08e1e87..f7e9b6f 100644
---- a/content/common/features.gni
-+++ b/content/common/features.gni
+--- content/common/features.gni
++++ content/common/features.gni
 @@ -3,6 +3,7 @@
  # found in the LICENSE file.
  
