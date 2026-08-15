@@ -1,0 +1,15 @@
+diff --git chrome/browser/policy/configuration_policy_handler_list_factory.cc chrome/browser/policy/configuration_policy_handler_list_factory.cc
+--- chrome/browser/policy/configuration_policy_handler_list_factory.cc
++++ chrome/browser/policy/configuration_policy_handler_list_factory.cc
+@@ -1164,9 +1164,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
+   { key::kBrowserSwitcherChromeParameters,
+     browser_switcher::prefs::kChromeParameters,
+     base::Value::Type::LIST },
++#if BUILDFLAG(ENABLE_PRINTING)
+   { key::kPrintRasterizationMode,
+     prefs::kPrintRasterizationMode,
+     base::Value::Type::INTEGER },
++#endif  // BUILDFLAG(ENABLE_PRINTING)
+ #else  // defined(OS_WIN)
+   { key::kNtlmV2Enabled,
+     prefs::kNtlmV2Enabled,
