@@ -1,7 +1,7 @@
 diff --git chrome/chrome_paks.gni chrome/chrome_paks.gni
 --- chrome/chrome_paks.gni
 +++ chrome/chrome_paks.gni
-@@ -288,7 +288,7 @@ template("chrome_extra_paks") {
+@@ -287,7 +287,7 @@ template("chrome_extra_paks") {
          "//extensions:extensions_resources",
        ]
      }
