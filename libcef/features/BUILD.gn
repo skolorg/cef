@@ -92,6 +92,7 @@ buildflag_header("features") {
     "ENABLE_CEF_FILE_DIALOGS=$cef_enable_file_dialogs",
     "ENABLE_CEF_JAVASCRIPT_DIALOGS=$cef_enable_javascript_dialogs",
     "ENABLE_CEF_DOWNLOADS=$cef_enable_downloads",
+    "ENABLE_CEF_SHAPE_DETECTION=$cef_enable_shape_detection",
   ]
 }
 

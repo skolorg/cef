@@ -20,6 +20,8 @@ declare_args() {
   cef_enable_javascript_dialogs = true
   # Build CEF download callbacks and download item wrappers.
   cef_enable_downloads = true
+  # Build Blink Shape Detection API bindings and the corresponding service.
+  cef_enable_shape_detection = true
 
   # Enables base target customizations necessary for distribution of the
   # cef_sandbox static library. This value will be set via gn_args.py for the

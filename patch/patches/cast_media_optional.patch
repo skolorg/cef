@@ -33,7 +33,7 @@ index 3647247a4..ebb631234 100755
        "//components/payments/content:utils",
 -      "//media/cast:net",
      ]
-+    if (cef_enable_media_router) {
++    if (cef_enable_media_router && cef_enable_cast) {
 +      sources += [
 +        "media/cast_mirroring_service_host.cc",
 +        "media/cast_mirroring_service_host.h",
@@ -76,7 +76,7 @@ index 3647247a4..ebb631234 100755
        "//google_apis/drive",
        "//services/device/public/mojom",
      ]
-+    if (cef_enable_media_router) {
++    if (cef_enable_media_router && cef_enable_cast) {
 +      deps += [
 +        "//media/cast:sender",
 +

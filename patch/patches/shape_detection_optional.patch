@@ -1,0 +1,97 @@
+diff --git a/content/browser/BUILD.gn b/content/browser/BUILD.gn
+index 84d3efb..ff724db 100644
+--- a/content/browser/BUILD.gn
++++ b/content/browser/BUILD.gn
+@@ -17,6 +17,7 @@ import("//device/vr/buildflags/buildflags.gni")
+ import("//gpu/vulkan/features.gni")
+ import("//media/media_options.gni")
+ import("//net/features.gni")
++import("//cef/libcef/features/features.gni")
+ import("//ppapi/buildflags/buildflags.gni")
+ import("//printing/buildflags/buildflags.gni")
+ import("//third_party/blink/public/public_features.gni")
+@@ -182,8 +183,6 @@ source_set("browser") {
+     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
+     "//services/service_manager/public/cpp",
+     "//services/service_manager/public/mojom",
+-    "//services/shape_detection:lib",
+-    "//services/shape_detection/public/mojom",
+     "//services/tracing:lib",
+     "//services/tracing/public/cpp",
+     "//services/tracing/public/cpp:traced_process",
+@@ -255,6 +254,13 @@ source_set("browser") {
+     "//v8:v8_version",
+   ]
+ 
++  if (cef_enable_shape_detection) {
++    deps += [
++      "//services/shape_detection:lib",
++      "//services/shape_detection/public/mojom",
++    ]
++  }
++
+   if (is_chromeos_ash) {
+     deps += [
+       "//chromeos/services/machine_learning/public/cpp",
+diff --git a/third_party/blink/renderer/modules/BUILD.gn b/third_party/blink/renderer/modules/BUILD.gn
+index f9f35f7..cd70fb5 100644
+--- a/third_party/blink/renderer/modules/BUILD.gn
++++ b/third_party/blink/renderer/modules/BUILD.gn
+@@ -4,6 +4,7 @@
+ 
+ import("//build/config/chromecast_build.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
++import("//cef/libcef/features/features.gni")
+ import("//third_party/blink/renderer/bindings/bindings.gni")
+ import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
+ import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
+@@ -155,7 +156,6 @@ component("modules") {
+     "//third_party/blink/renderer/modules/screen_orientation",
+     "//third_party/blink/renderer/modules/sensor",
+     "//third_party/blink/renderer/modules/service_worker",
+-    "//third_party/blink/renderer/modules/shapedetection",
+     "//third_party/blink/renderer/modules/speech",
+     "//third_party/blink/renderer/modules/srcobject",
+     "//third_party/blink/renderer/modules/storage",
+@@ -180,6 +180,10 @@ component("modules") {
+     "//third_party/blink/renderer/modules/xr",
+   ]
+ 
++  if (cef_enable_shape_detection) {
++    sub_modules += [ "//third_party/blink/renderer/modules/shapedetection" ]
++  }
++
+   if (is_android) {
+     sub_modules += [ "//third_party/blink/renderer/modules/remote_objects" ]
+   } else {
+diff --git a/third_party/blink/renderer/modules/modules_idl_files.gni b/third_party/blink/renderer/modules/modules_idl_files.gni
+index 2f3b928..a637881 100644
+--- a/third_party/blink/renderer/modules/modules_idl_files.gni
++++ b/third_party/blink/renderer/modules/modules_idl_files.gni
+@@ -4,6 +4,7 @@
+ 
+ import("//third_party/blink/renderer/bindings/bindings.gni")
+ import("//third_party/blink/renderer/config.gni")
++import("//cef/libcef/features/features.gni")
+ 
+ # The paths in this file are absolute since this file is imported and the
+ # file lists must be valid from multiple "current directories".
+@@ -120,7 +121,6 @@ _idl_imports = [
+   "//third_party/blink/renderer/modules/screen_orientation/idls.gni",
+   "//third_party/blink/renderer/modules/sensor/idls.gni",
+   "//third_party/blink/renderer/modules/service_worker/idls.gni",
+-  "//third_party/blink/renderer/modules/shapedetection/idls.gni",
+   "//third_party/blink/renderer/modules/speech/idls.gni",
+   "//third_party/blink/renderer/modules/srcobject/idls.gni",
+   "//third_party/blink/renderer/modules/storage/idls.gni",
+@@ -143,6 +143,10 @@ _idl_imports = [
+   "//third_party/blink/renderer/modules/xr/idls.gni",
+ ]
+ 
++if (cef_enable_shape_detection) {
++  _idl_imports += [ "//third_party/blink/renderer/modules/shapedetection/idls.gni" ]
++}
++
+ # TODO(dcheng): For whatever reason, is_android doesn't seem to be defined, even
+ # if using import() instead of read_file() in the foreach() loop below...
+ if (!is_android) {
