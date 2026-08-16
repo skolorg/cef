@@ -2,14 +2,14 @@ diff --git components/safe_browsing/core/file_type_policies.cc components/safe_b
 index 7b4fb4e..f0b96ab 100644
 --- components/safe_browsing/core/file_type_policies.cc
 +++ components/safe_browsing/core/file_type_policies.cc
-@@ -8,6 +8,7 @@
+@@ -8,5 +8,6 @@
  #include "base/memory/singleton.h"
  #include "base/metrics/histogram_functions.h"
  #include "base/strings/string_util.h"
-+#include "components/grit/components_resources.h"
+ #include "components/grit/components_resources.h"
 +#include "components/safe_browsing/buildflags.h"
  #include "ui/base/resource/resource_bundle.h"
-@@ -49,7 +50,11 @@ FileTypePolicies::~FileTypePolicies() {
+@@ -50,5 +50,9 @@ FileTypePolicies::~FileTypePolicies() {
  
  std::string FileTypePolicies::ReadResourceBundle() {
 +#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
