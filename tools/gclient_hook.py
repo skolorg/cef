@@ -163,6 +163,16 @@ if platform == 'windows':
 
 try:
   configs = GetAllPlatformConfigs(gn_args)
+  if platform == 'windows':
+    # This downstream build produces only the x64 Release distribution. Avoid
+    # generating unused x86 and Debug projects; their GN evaluation otherwise
+    # needlessly requires the corresponding Windows SDK toolchain components.
+    configs = {
+        name: config for name, config in configs.items()
+        if name.startswith('Release_GN_x64')
+    }
+    if not configs:
+      raise Exception('No Release_GN_x64 configuration was generated')
   for dir, config in configs.items():
     # Create out directories and write the args.gn file.
     out_path = os.path.join(src_dir, 'out', dir)
