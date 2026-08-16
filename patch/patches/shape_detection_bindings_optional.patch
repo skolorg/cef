@@ -1,0 +1,67 @@
+diff --git third_party/blink/renderer/bindings/generated_in_modules.gni third_party/blink/renderer/bindings/generated_in_modules.gni
+index 46763ab..8a3f2e9 100644
+--- third_party/blink/renderer/bindings/generated_in_modules.gni
++++ third_party/blink/renderer/bindings/generated_in_modules.gni
+@@ -3,6 +3,7 @@
+ # found in the LICENSE file.
+ 
+ import("//third_party/blink/renderer/config.gni")
++import("//cef/libcef/features/features.gni")
+ 
+ # Generated sources for production
+ 
+@@ -2347,6 +2348,25 @@ generated_interface_sources_in_modules = [
+   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer.h",
+ ]
+ 
++if (!cef_enable_shape_detection) {
++  _shape_detection_v8_bindings = [
++    "*v8_barcode_detector*",
++    "*v8_barcode_format*",
++    "*v8_detected_barcode*",
++    "*v8_detected_face*",
++    "*v8_detected_text*",
++    "*v8_face_detector*",
++    "*v8_landmark*",
++    "*v8_text_detector*",
++  ]
++  generated_dictionary_sources_in_modules = filter_exclude(
++      generated_dictionary_sources_in_modules, _shape_detection_v8_bindings)
++  generated_enumeration_sources_in_modules = filter_exclude(
++      generated_enumeration_sources_in_modules, _shape_detection_v8_bindings)
++  generated_interface_sources_in_modules = filter_exclude(
++      generated_interface_sources_in_modules, _shape_detection_v8_bindings)
++}
++
+ generated_namespace_sources_in_modules = []
+ 
+ # Direct Sockets
+diff --git third_party/blink/renderer/bindings/modules/v8/BUILD.gn third_party/blink/renderer/bindings/modules/v8/BUILD.gn
+index fd8e73f..5fd167b 100644
+--- third_party/blink/renderer/bindings/modules/v8/BUILD.gn
++++ third_party/blink/renderer/bindings/modules/v8/BUILD.gn
+@@ -3,6 +3,7 @@
+ # found in the LICENSE file.
+ 
+ import("//build/config/python.gni")
++import("//cef/libcef/features/features.gni")
+ import("//third_party/blink/renderer/bindings/bindings.gni")
+ import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
+ import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
+@@ -216,12 +217,15 @@ group("generate_mojo_bindings") {
+     "//services/device/public/mojom:generic_sensor_headers",
+     "//services/device/public/mojom:mojom_blink_headers",
+     "//services/device/public/mojom:usb_blink_headers",
+-    "//services/shape_detection/public/mojom:mojom_blink_headers",
+ 
+     # IndexedDB Mojom Blink headers are provided by the mojom_modules
+     # target.
+     "//third_party/blink/public/mojom:mojom_modules_blink_headers",
+   ]
++  if (cef_enable_shape_detection) {
++    deps += [ "//services/shape_detection/public/mojom:mojom_blink_headers" ]
++  }
++
+ }
+ 
+ blink_modules_sources("bindings_modules_impl") {
