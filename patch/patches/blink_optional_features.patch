@@ -1,0 +1,99 @@
+diff --git third_party/blink/renderer/bindings/idl_in_core.gni third_party/blink/renderer/bindings/idl_in_core.gni
+index 16d8c5e..626ac2a 100755
+--- third_party/blink/renderer/bindings/idl_in_core.gni
++++ third_party/blink/renderer/bindings/idl_in_core.gni
+@@ -4,2 +4,4 @@
+ 
++import("//cef/libcef/features/features.gni")
++
+ # Statically-defined (not runtime-generated) IDL files in 'core' component
+@@ -695,2 +697,11 @@ static_idl_files_in_core = get_path_info(
+         "abspath")
++if (!cef_enable_blink_svg) {
++  static_idl_files_in_core = filter_exclude(
++      static_idl_files_in_core, [ "*/third_party/blink/renderer/core/svg/*" ])
++}
++if (!cef_enable_blink_animation) {
++  static_idl_files_in_core = filter_exclude(
++      static_idl_files_in_core,
++      [ "*/third_party/blink/renderer/core/animation/*" ])
++}
+ 
+diff --git third_party/blink/renderer/core/BUILD.gn third_party/blink/renderer/core/BUILD.gn
+index fef22a6..78c2417 100755
+--- third_party/blink/renderer/core/BUILD.gn
++++ third_party/blink/renderer/core/BUILD.gn
+@@ -16,2 +16,3 @@ import("//third_party/blink/renderer/build/scripts/scripts.gni")
+ import("//third_party/blink/renderer/config.gni")
++import("//cef/libcef/features/features.gni")
+ import("//third_party/blink/renderer/core/accessibility/build.gni")
+@@ -236,3 +237,5 @@ component("core") {
+   sources += rebase_path(blink_core_sources_style, "", "style")
+-  sources += rebase_path(blink_core_sources_svg, "", "svg")
++  if (cef_enable_blink_svg) {
++    sources += rebase_path(blink_core_sources_svg, "", "svg")
++  }
+   sources += rebase_path(blink_core_sources_timezone, "", "timezone")
+@@ -257,3 +260,2 @@ component("core") {
+     "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
+-    "//third_party/blink/renderer/core/animation",
+     "//third_party/blink/renderer/core/exported",
+@@ -271,2 +273,5 @@ component("core") {
+   ]
++  if (cef_enable_blink_animation) {
++    public_deps += [ "//third_party/blink/renderer/core/animation" ]
++  }
+ 
+@@ -312,3 +317,2 @@ component("core") {
+     ":core_hot",
+-    "//third_party/blink/renderer/core/animation",
+     "//third_party/blink/renderer/core/exported",
+@@ -317,2 +321,6 @@ component("core") {
+   ]
++  if (cef_enable_blink_animation) {
++    allow_circular_includes_from +=
++        [ "//third_party/blink/renderer/core/animation" ]
++  }
+ 
+@@ -1080,2 +1088,8 @@ targets_generating_sources = [
+ ]
++if (!cef_enable_blink_svg) {
++  targets_generating_sources -= [
++    ":make_core_generated_svg_element_type_helpers",
++    ":make_core_generated_svg_names",
++  ]
++}
+ 
+diff --git third_party/blink/renderer/core/animation/BUILD.gn third_party/blink/renderer/core/animation/BUILD.gn
+index efc1cfc..61849af 100755
+--- third_party/blink/renderer/core/animation/BUILD.gn
++++ third_party/blink/renderer/core/animation/BUILD.gn
+@@ -5,2 +5,3 @@
+ import("//build/buildflag_header.gni")
++import("//cef/libcef/features/features.gni")
+ import("//third_party/blink/renderer/core/core.gni")
+@@ -289,2 +290,6 @@ blink_core_sources("animation") {
+   ]
++  if (!cef_enable_blink_animation) {
++    sources = []
++    deps = []
++  }
+ }
+diff --git third_party/blink/renderer/platform/BUILD.gn third_party/blink/renderer/platform/BUILD.gn
+index ca52366..35c3bec 100755
+--- third_party/blink/renderer/platform/BUILD.gn
++++ third_party/blink/renderer/platform/BUILD.gn
+@@ -17,2 +17,3 @@ import("//third_party/blink/renderer/build/scripts/scripts.gni")
+ import("//third_party/blink/renderer/config.gni")
++import("//cef/libcef/features/features.gni")
+ import("//third_party/blink/renderer/platform/platform_generated.gni")
+@@ -179,3 +180,2 @@ group("blink_platform_public_deps") {
+     "//third_party/ots",
+-    "//ui/gfx/animation/keyframe",
+     "//url",
+@@ -183,2 +183,5 @@ group("blink_platform_public_deps") {
+   ]
++  if (cef_enable_gfx_animation) {
++    public_deps += [ "//ui/gfx/animation/keyframe" ]
++  }
+   public_configs = [ "//third_party/blink/renderer:features" ]

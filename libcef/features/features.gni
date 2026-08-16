@@ -22,6 +22,17 @@ declare_args() {
   cef_enable_downloads = true
   # Build Blink Shape Detection API bindings and the corresponding service.
   cef_enable_shape_detection = true
+  # Keep Blink SVG sources and bindings in the build. Set to false only for a
+  # dedicated downstream experiment; SVG is referenced by HTML, CSS and
+  # generated bindings and therefore requires a follow-up Blink patch.
+  cef_enable_blink_svg = true
+  # Keep the Blink animation engine in the build. Set to false only for a
+  # dedicated downstream experiment; CSS transitions and Web Animations share
+  # this target and its generated bindings.
+  cef_enable_blink_animation = true
+  # Keep the optional ui/gfx keyframe animation target dependency exported by
+  # Blink. Geometry and Skia dependencies remain mandatory.
+  cef_enable_gfx_animation = true
 
   # Enables base target customizations necessary for distribution of the
   # cef_sandbox static library. This value will be set via gn_args.py for the

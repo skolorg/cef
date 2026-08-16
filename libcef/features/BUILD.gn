@@ -93,6 +93,9 @@ buildflag_header("features") {
     "ENABLE_CEF_JAVASCRIPT_DIALOGS=$cef_enable_javascript_dialogs",
     "ENABLE_CEF_DOWNLOADS=$cef_enable_downloads",
     "ENABLE_CEF_SHAPE_DETECTION=$cef_enable_shape_detection",
+    "ENABLE_CEF_BLINK_SVG=$cef_enable_blink_svg",
+    "ENABLE_CEF_BLINK_ANIMATION=$cef_enable_blink_animation",
+    "ENABLE_CEF_GFX_ANIMATION=$cef_enable_gfx_animation",
   ]
 }
 
