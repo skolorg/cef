@@ -1,0 +1,19 @@
+diff --git third_party/blink/renderer/bindings/generated_in_modules.gni third_party/blink/renderer/bindings/generated_in_modules.gni
+index 8a3f2e9..4e96dc1 100644
+--- third_party/blink/renderer/bindings/generated_in_modules.gni
++++ third_party/blink/renderer/bindings/generated_in_modules.gni
+@@ -2359,11 +2359,11 @@ if (!cef_enable_shape_detection) {
+     "*v8_landmark*",
+     "*v8_text_detector*",
+   ]
+-  generated_dictionary_sources_in_modules = filter_exclude(
++  generated_dictionary_sources_in_modules -= filter_include(
+       generated_dictionary_sources_in_modules, _shape_detection_v8_bindings)
+-  generated_enumeration_sources_in_modules = filter_exclude(
++  generated_enumeration_sources_in_modules -= filter_include(
+       generated_enumeration_sources_in_modules, _shape_detection_v8_bindings)
+-  generated_interface_sources_in_modules = filter_exclude(
++  generated_interface_sources_in_modules -= filter_include(
+       generated_interface_sources_in_modules, _shape_detection_v8_bindings)
+ }
+ 
