@@ -1,0 +1,23 @@
+diff --git chrome/browser/ui/webui/downloads/downloads_dom_handler.cc chrome/browser/ui/webui/downloads/downloads_dom_handler.cc
+index 2f779df..b1bbf45 100644
+--- chrome/browser/ui/webui/downloads/downloads_dom_handler.cc
++++ chrome/browser/ui/webui/downloads/downloads_dom_handler.cc
+@@ -36,6 +36,7 @@
+ #include "chrome/common/pref_names.h"
+ #include "chrome/common/url_constants.h"
+ #include "components/download/public/common/download_item.h"
+ #include "components/prefs/pref_service.h"
++#include "components/safe_browsing/buildflags.h"
+ #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+ #include "content/public/browser/browser_thread.h"
+@@ -367,6 +367,10 @@ void DownloadsDOMHandler::OpenDuringScanningRequiringGesture(
+   if (download) {
+     DownloadItemModel model(download);
+     model.SetOpenWhenComplete(true);
++#if BUILDFLAG(FULL_SAFE_BROWSING)
+     model.CompleteSafeBrowsingScan();
++#else
++    model.OpenDownload();
++#endif
+   }
+ }
