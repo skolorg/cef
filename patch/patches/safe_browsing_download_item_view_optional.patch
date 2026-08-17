@@ -1,0 +1,13 @@
+diff --git chrome/browser/ui/views/download/download_item_view.cc chrome/browser/ui/views/download/download_item_view.cc
+index 4e687d1..0000000 100644
+--- chrome/browser/ui/views/download/download_item_view.cc
++++ chrome/browser/ui/views/download/download_item_view.cc
+@@ -1235,3 +1235,7 @@
+ void DownloadItemView::OpenDownloadDuringAsyncScanning() {
++#if BUILDFLAG(FULL_SAFE_BROWSING)
+   model_->CompleteSafeBrowsingScan();
++#else
++  model_->OpenDownload();
++#endif
+   model_->SetOpenWhenComplete(true);
+ }

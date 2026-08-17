@@ -1,0 +1,28 @@
+diff --git chrome/browser/download/notification/download_item_notification.cc chrome/browser/download/notification/download_item_notification.cc
+index 7f7df3b..0000000 100644
+--- chrome/browser/download/notification/download_item_notification.cc
++++ chrome/browser/download/notification/download_item_notification.cc
+@@ -37,5 +37,6 @@
+ #include "components/download/public/common/download_interrupt_reasons.h"
+ #include "components/download/public/common/download_item.h"
+ #include "components/prefs/pref_service.h"
++#include "components/safe_browsing/buildflags.h"
+ #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+ #include "components/strings/grit/components_strings.h"
+@@ -319,5 +319,7 @@ void DownloadItemNotification::Click(
+     // Completing Safe Browsing scan early if requested to open.
+     if (IsScanning() && AllowedToOpenWhileScanning() &&
+         command == DownloadCommands::OPEN_WHEN_COMPLETE) {
++#if BUILDFLAG(FULL_SAFE_BROWSING)
+       item_->CompleteSafeBrowsingScan();
++#endif
+     }
+@@ -357,6 +357,8 @@ void DownloadItemNotification::Click(
+  // Handle a click on the notification's body while scanning.
+   if (IsScanning() && AllowedToOpenWhileScanning()) {
++#if BUILDFLAG(FULL_SAFE_BROWSING)
+     item_->CompleteSafeBrowsingScan();
++#endif
+     item_->OpenDownload();
+     return;
+   }
